@@ -26,6 +26,7 @@ builder.Services.AddScoped<FuncionarioService>();
 builder.Services.AddScoped<JogoService>();
 builder.Services.AddScoped<EnderecoService>();
 builder.Services.AddScoped<PessoaService>();
+builder.Services.AddScoped<CaixaService>();
 
 var app = builder.Build();
 

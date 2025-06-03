@@ -8,6 +8,8 @@ namespace Claustromania.DataContexts
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Sala> Salas { get; set; }
+        
+        public DbSet<Caixa> Caixas { get; set; }
         public DbSet<Unidade> Unidade { get; set; }
         public DbSet<Funcionario> Funcionario { get; set; }
         public DbSet<Jogo> Jogo { get; set; }

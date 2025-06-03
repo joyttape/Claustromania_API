@@ -9,7 +9,7 @@ using Claustromania.Services;
 namespace Claustromania.Controllers
 {
 
-    [Route("unidades")]
+    [Route("unidade")]
     [ApiController]
     public class UnidadeController : ControllerBase
     {
