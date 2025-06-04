@@ -11,6 +11,29 @@ CREATE TABLE sala (
     Status_Sala BOOLEAN NOT NULL
 );
 
+CREATE TABLE caixa (
+    id CHAR(36) NOT NULL PRIMARY KEY, -- UUID em formato string
+    data_hora_abertura DATETIME NOT NULL,
+    data_hora_fechamento DATETIME,
+    valor_inicial DECIMAL(10,2) NOT NULL,
+    valor_final DECIMAL(10,2),
+    total_transacoes DECIMAL(10,2),
+    status VARCHAR(50), -- Ex: "Aberto", "Fechado", "Conferência pendente", etc.
+    funcionario_nome VARCHAR(100), -- Nome do funcionário que abriu o caixa
+    observacoes TEXT
+);
+CREATE TABLE caixa (
+    id CHAR(36) NOT NULL PRIMARY KEY, -- UUID em formato string
+    data_hora_abertura DATETIME NOT NULL,
+    data_hora_fechamento DATETIME,
+    valor_inicial DECIMAL(10,2) NOT NULL,
+    valor_final DECIMAL(10,2),
+    total_transacoes DECIMAL(10,2),
+    status VARCHAR(50), -- Ex: "Aberto", "Fechado", "Conferência pendente", etc.
+    funcionario_nome VARCHAR(100), -- Nome do funcionário que abriu o caixa
+    observacoes TEXT
+);
+
 # Select * FROM funcionario;
 
 CREATE TABLE unidade(
