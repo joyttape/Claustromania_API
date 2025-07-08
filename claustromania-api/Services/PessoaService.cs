@@ -1,111 +1,82 @@
-﻿using Claustromania.DataContexts;
+﻿using AutoMapper;
+using Claustromania.Data;
 using Claustromania.Dtos;
 using Claustromania.Models;
 using Microsoft.EntityFrameworkCore;
+using BCrypt.Net; // Adicione este using
 
 namespace Claustromania.Services
 {
     public class PessoaService
     {
-        private readonly AppDbContext _context;
+        private readonly ClaustromaniaDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PessoaService(AppDbContext context)
+        public PessoaService(ClaustromaniaDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<ICollection<Pessoa>> GetAll()
+        public async Task<IEnumerable<PessoaDto>> GetAll()
         {
-            return await _context.Pessoa.ToListAsync();
+            var pessoas = await _context.Pessoas.ToListAsync();
+            return _mapper.Map<IEnumerable<PessoaDto>>(pessoas);
         }
 
-        public async Task<Pessoa?> GetOneById(int id)
+        public async Task<PessoaDto?> GetOneById(Guid id)
         {
-            try
-            {
-                return await _context.Pessoa
-                    .SingleOrDefaultAsync(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var pessoa = await _context.Pessoas.FindAsync(id);
+            return pessoa is null ? null : _mapper.Map<PessoaDto>(pessoa);
         }
 
-        public async Task<Pessoa?> Create(PessoaDto pessoaDto)
+        public async Task<PessoaDto> Create(PessoaDto dto)
         {
-            try
+            if (!string.IsNullOrEmpty(dto.Senha))
             {
-                var newPessoa = new Pessoa
-                {
-                    Nome = pessoaDto.Nome,
-                    CPF = pessoaDto.CPF,
-                    DataNascimento = pessoaDto.DataNascimento.Date, // Garante apenas a parte da data
-                    Sexo = pessoaDto.Sexo,
-                    Email = pessoaDto.Email
-                };
-
-                await _context.Pessoa.AddAsync(newPessoa);
-                await _context.SaveChangesAsync();
-
-                return newPessoa;
+                dto.Senha = BCrypt.Net.BCrypt.HashPassword(dto.Senha); // <-- Hashing aqui
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            var pessoa = _mapper.Map<Pessoa>(dto);
+            pessoa.Id = Guid.NewGuid(); // garantir que a chave seja definida aqui
+            _context.Pessoas.Add(pessoa);
+            await _context.SaveChangesAsync();
+            return _mapper.Map<PessoaDto>(pessoa);
         }
 
-        public async Task<Pessoa?> Update(int id, PessoaDto pessoaDto)
+        public async Task<PessoaDto?> Update(Guid id, PessoaDto dto)
         {
-            try
+            var pessoa = await _context.Pessoas.FindAsync(id);
+            if (pessoa is null) return null;
+
+            // Se uma nova senha for fornecida no DTO, faça o hash e atualize
+            if (!string.IsNullOrEmpty(dto.Senha))
             {
-                var pessoa = await GetOneById(id);
-
-                if (pessoa is null)
-                    return null;
-
-                pessoa.Nome = pessoaDto.Nome;
-                pessoa.CPF = pessoaDto.CPF;
-                pessoa.DataNascimento = pessoaDto.DataNascimento.Date; // Garante apenas a parte da data
-                pessoa.Sexo = pessoaDto.Sexo;
-                pessoa.Email = pessoaDto.Email;
-
-                _context.Pessoa.Update(pessoa);
-                await _context.SaveChangesAsync();
-
-                return pessoa;
+                pessoa.Senha = BCrypt.Net.BCrypt.HashPassword(dto.Senha); // <-- Hashing aqui
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public async Task<Pessoa?> Delete(int id)
-        {
-            try
-            {
-                var pessoa = await _context.Pessoa.FindAsync(id);
+            // IMPORTANTE: Se dto.Senha for nula ou vazia, a senha existente no banco NÃO será alterada.
+            // O AutoMapper mapearia outras propriedades, mas a senha é tratada explicitamente.
+            _mapper.Map(dto, pessoa); // Mapeia as outras propriedades
 
-                if (pessoa == null)
-                    return null;
-
-                _context.Pessoa.Remove(pessoa);
-                await _context.SaveChangesAsync();
-                return pessoa;
-            }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine($"Erro ao deletar pessoa: {ex.InnerException?.Message}");
-                return null;
-            }
+            await _context.SaveChangesAsync();
+            return _mapper.Map<PessoaDto>(pessoa);
         }
 
-        private async Task<bool> Exist(int id)
+        public async Task<bool> Delete(Guid id)
         {
-            return await _context.Pessoa.AnyAsync(c => c.Id == id);
+            var pessoa = await _context.Pessoas.FindAsync(id);
+            if (pessoa is null) return false;
+
+            _context.Pessoas.Remove(pessoa);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<IEnumerable<Pessoa>> GetPessoasByCidadeAsync(string cidade)
+        {
+            return await _context.Pessoas
+                                 .Include(p => p.Endereco) // Inclui o Endereco da Pessoa
+                                 .Where(p => p.Endereco != null && p.Endereco.Cidade == cidade)
+                                 .ToListAsync();
         }
     }
 }
-
-

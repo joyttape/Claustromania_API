@@ -1,29 +1,41 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Claustromania.Models
 {
     [Table("unidade")]
-
     public class Unidade
     {
-        public int Id { get; set; }
+        [Key]
+        [Column("id")]
+        public Guid Id { get; set; }
 
-        [Column("NomeUnidade")]
-        public required string NomeUnidade { get; set; }
+        [Required]
+        [Column("nome")]
+        public string Nome { get; set; }
 
-        [Column("Capacidade")]
+        [Column("capacidade")]
+        public int? Capacidade { get; set; }
 
-        public required int Capacidade { get; set; }
+        [Column("horario_abertura")]
+        public TimeSpan? HorarioAbertura { get; set; }
 
-        [Column("Horario_Func")]
+        [Column("horario_fechamento")]
+        public TimeSpan? HorarioFechamento { get; set; }
 
-        public required string Horario_Func {  get; set; }
+        [Column("telefone")]
+        public string Telefone { get; set; }
 
-        [Column("Telefone")]
-        public required string Telefone { get; set; }
+        [Column("ativa")]
+        public bool Ativa { get; set; } = true;
 
-        [Column("Status_uni")]
-        public required bool Status_uni { get; set; }
+        [ForeignKey("FkEndereco")]
+        public Endereco Endereco { get; set; }
 
+        [Column("fk_endereco")]
+        public Guid? FkEndereco { get; set; }
+
+        
     }
 }

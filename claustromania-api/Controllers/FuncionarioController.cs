@@ -1,108 +1,60 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Claustromania.Dtos;
+﻿using Claustromania.DTOs;
 using Claustromania.Models;
-using Claustromania.DataContexts;
-using Microsoft.EntityFrameworkCore;
 using Claustromania.Services;
-
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace Claustromania.Controllers
 {
-    [Route("funcionario")]
     [ApiController]
+    [Route("api/[controller]")]
     public class FuncionarioController : ControllerBase
     {
         private readonly FuncionarioService _service;
+        private readonly IMapper _mapper;
 
-        public FuncionarioController(FuncionarioService service)
+        public FuncionarioController(FuncionarioService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<FuncionarioDto>>> GetAll()
         {
-            var listafuncionarios = await _service.GetAll();
-
-            return Ok(listafuncionarios);
+            var funcionarios = await _service.GetAllAsync();
+            return Ok(_mapper.Map<List<FuncionarioDto>>(funcionarios));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<ActionResult<FuncionarioDto>> GetById(Guid id)
         {
-            try
-            {
-                var funcionarios = await _service.GetOneById(id);
-
-                if (funcionarios is null)
-                {
-                    return NotFound("Informacao nao encontrada!");
-                }
-
-                return Ok(funcionarios);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var funcionario = await _service.GetByIdAsync(id);
+            return funcionario == null ? NotFound() : Ok(_mapper.Map<FuncionarioDto>(funcionario));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] FuncionarioDto item)
+        public async Task<ActionResult<FuncionarioDto>> Create([FromBody] FuncionarioDto dto)
         {
-            try
-            {
-                var funcionarios = await _service.Create(item);
-
-                if (funcionarios is null)
-                {
-                    return Problem("Ocorreram erros ao salvar!");
-                }
-
-                return Created("", funcionarios);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Erro: " + ex.InnerException?.Message ?? ex.Message);
-                throw;
-            }
+            var entity = _mapper.Map<Funcionario>(dto);
+            var created = await _service.CreateAsync(entity);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<FuncionarioDto>(created));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] FuncionarioDto item)
+        public async Task<IActionResult> Update(Guid id, [FromBody] FuncionarioDto dto)
         {
-            try
-            {
-                var funcionarios = await _service.Update(id, item);
-
-                if (funcionarios is null)
-                    return NotFound();
-
-                return Ok(funcionarios);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            if (id != dto.Id) return BadRequest();
+            var entity = _mapper.Map<Funcionario>(dto);
+            var updated = await _service.UpdateAsync(entity);
+            return updated ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var sala = await _service.Delete(id);
-
-                if (sala == null)
-                    return NotFound();
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

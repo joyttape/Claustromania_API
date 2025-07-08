@@ -1,20 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Claustromania.Models
 {
     [Table("sala")]
     public class Sala
     {
-        [Column ("Id")]
-        public int Id { get; set; }
+        [Key]
+        [Column("id")]
+        public Guid Id { get; set; }
 
-        [Column("Numero")]
-        public required string Numero { get; set; }
+        [Required]
+        [Column("nome")]
+        public string Nome { get; set; }
 
-        [Column("Capac_Jogadores")]
-        public required int Jogadores_num { get; set; }
+        [Column("capacidade")]
+        public int? Capacidade { get; set; }
 
-        [Column("Status_Sala")]
-        public required bool Status { get; set; }
+        [Column("ativa")]
+        public bool Ativa { get; set; } = true;
+
+        [Column("fk_unidade")]
+        public Guid? FkUnidade { get; set; }
     }
 }

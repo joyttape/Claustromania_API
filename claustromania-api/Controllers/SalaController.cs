@@ -1,109 +1,59 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Claustromania.Dtos;
+﻿using Claustromania.DTOs;
 using Claustromania.Models;
-using Claustromania.DataContexts;
-using Microsoft.EntityFrameworkCore;
 using Claustromania.Services;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace Claustromania.Controllers
 {
-    [Route("salas")]
     [ApiController]
+    [Route("api/[controller]")]
     public class SalaController : ControllerBase
     {
         private readonly SalaService _service;
+        private readonly IMapper _mapper;
 
-        public SalaController(SalaService service)
+        public SalaController(SalaService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<SalaDto>>> GetAll()
         {
-            var listasalas = await _service.GetAll();
-
-            return Ok(listasalas);
+            var salas = await _service.GetAllAsync();
+            return Ok(_mapper.Map<List<SalaDto>>(salas));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<ActionResult<SalaDto>> GetById(Guid id)
         {
-            try
-            {
-                var salas = await _service.GetOneById(id);
-
-                if (salas is null)
-                {
-                    return NotFound("Informacao nao encontrada!");
-                }
-
-                return Ok(salas);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var sala = await _service.GetByIdAsync(id);
+            return sala == null ? NotFound() : Ok(_mapper.Map<SalaDto>(sala));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] SalaDto item)
+        public async Task<ActionResult<SalaDto>> Create([FromBody] SalaDto dto)
         {
-            try
-            {
-                var sala = await _service.Create(item);
-
-                if (sala is null)
-                {
-                    return Problem("Ocorreram erros ao salvar!");
-                }
-
-                return Created("", sala);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Erro: " + ex.InnerException?.Message ?? ex.Message);
-                throw;
-            }
-
-
+            var entity = _mapper.Map<Sala>(dto);
+            var created = await _service.CreateAsync(entity);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<SalaDto>(created));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] SalaDto item)
+        public async Task<IActionResult> Update(Guid id, [FromBody] SalaDto dto)
         {
-            try
-            {
-                var sala = await _service.Update(id, item);
-
-                if (sala is null)
-                    return NotFound();
-
-                return Ok(sala);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            if (id != dto.Id) return BadRequest();
+            var updated = await _service.UpdateAsync(_mapper.Map<Sala>(dto));
+            return updated ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var sala = await _service.Delete(id);
-
-                if (sala == null)
-                    return NotFound();
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

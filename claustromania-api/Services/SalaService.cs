@@ -1,5 +1,4 @@
-﻿using Claustromania.DataContexts;
-using Claustromania.Dtos;
+﻿using Claustromania.Data;
 using Claustromania.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,109 +6,49 @@ namespace Claustromania.Services
 {
     public class SalaService
     {
-        private readonly AppDbContext _context;
+        private readonly ClaustromaniaDbContext _context;
 
-        public SalaService(AppDbContext context)
+        public SalaService(ClaustromaniaDbContext context)
         {
             _context = context;
         }
 
-        public async Task<ICollection<Sala>> GetAll()
+        public async Task<List<Sala>> GetAllAsync()
         {
-            var list = await _context.Salas.ToListAsync();
-
-            return list;
+            return await _context.Salas.ToListAsync();
         }
 
-        public async Task<Sala?> GetOneById(int id)
+        public async Task<Sala?> GetByIdAsync(Guid id)
         {
-            try
-            {
-                return await _context.Salas
-                    .SingleOrDefaultAsync(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return await _context.Salas.FindAsync(id);
         }
 
-        public async Task<Sala?> Create(SalaDto sala)
+        public async Task<Sala> CreateAsync(Sala sala)
         {
-            try
-            {
-              
-                var newSala = new Sala
-
-                {
-                    Numero = sala.Numero,
-                    Jogadores_num = sala.Jogadores_num,
-                    Status = sala.Status
-                };
-
-                await _context.Salas.AddAsync(newSala);
-                await _context.SaveChangesAsync();
-
-                return newSala;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-        
-        public async Task<Sala?> Update(int id, SalaDto salas)
-        {
-            try
-            {
-                var _sala = await GetOneById(id);
-
-                if (_sala is null)
-                {
-                    return _sala;
-                }
-
-                _sala.Numero = salas.Numero;
-                _sala.Status = salas.Status;
-                _sala.Jogadores_num = salas.Jogadores_num;
-
-                _context.Salas.Update(_sala);
-                await _context.SaveChangesAsync();
-
-                return _sala;
-            }
-            catch (Exception ex)
-            {
-                    throw ex;
-            }
-            
+            sala.Id = Guid.NewGuid();
+            _context.Salas.Add(sala);
+            await _context.SaveChangesAsync();
+            return sala;
         }
 
-        public async Task<Sala?> Delete(int id)
+        public async Task<bool> UpdateAsync(Sala sala)
         {
-            try
-            {
-                var sala = await _context.Salas.FindAsync(id);
+            var existing = await _context.Salas.FindAsync(sala.Id);
+            if (existing == null) return false;
 
-                if (sala == null)
-                    return null;
-
-                _context.Salas.Remove(sala);
-                await _context.SaveChangesAsync();
-                return sala;
-
-            }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine($"Erro ao deletar sala: {ex.InnerException?.Message}");
-                return null;
-            }
+            _context.Entry(existing).CurrentValues.SetValues(sala);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-
-        private async Task<bool> Exist(int id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            return await _context.Salas.AnyAsync(c => c.Id == id);
+            var sala = await _context.Salas.FindAsync(id);
+            if (sala == null) return false;
+
+            _context.Salas.Remove(sala);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

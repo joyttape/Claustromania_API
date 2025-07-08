@@ -1,97 +1,69 @@
-﻿using Claustromania.Dtos;
+﻿using Claustromania.DTOs;
+using Claustromania.Models;
+using Claustromania.Data;
 using Claustromania.Services;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace Claustromania.Controllers
 {
-    [Route("caixa")]
     [ApiController]
+    [Route("api/[controller]")]
     public class CaixaController : ControllerBase
     {
         private readonly CaixaService _service;
+        private readonly IMapper _mapper;
 
-        public CaixaController(CaixaService service)
+        public CaixaController(CaixaService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<CaixaDto>>> GetAll()
         {
-            var caixas = await _service.GetAll();
-            return Ok(caixas);
+            var caixas = await _service.GetAllAsync();
+            return Ok(_mapper.Map<List<CaixaDto>>(caixas));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(Guid id)
+        public async Task<ActionResult<CaixaDto>> GetById(Guid id)
         {
-            try
-            {
-                var caixa = await _service.GetOneById(id);
-
-                if (caixa is null)
-                    return NotFound("Caixa não encontrado!");
-
-                return Ok(caixa);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var caixa = await _service.GetByIdAsync(id);
+            return caixa == null ? NotFound() : Ok(_mapper.Map<CaixaDto>(caixa));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CaixaDto dto)
+        public async Task<ActionResult<CaixaDto>> Create([FromBody] CaixaDto dto)
         {
-            try
-            {
-                var caixa = await _service.Create(dto);
-
-                if (caixa is null)
-                    return Problem("Erro ao salvar caixa!");
-
-                return Created("", caixa);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var entity = _mapper.Map<Caixa>(dto);
+            var created = await _service.CreateAsync(entity);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<CaixaDto>(created));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] CaixaDto dto)
+        public async Task<IActionResult> Update(Guid id, [FromBody] CaixaDto dto)
         {
-            try
-            {
-                var caixa = await _service.Update(id, dto);
-
-                if (caixa is null)
-                    return NotFound("Caixa não encontrado!");
-
-                return Ok(caixa);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            if (id != dto.Id) return BadRequest();
+            var updated = await _service.UpdateAsync(_mapper.Map<Caixa>(dto));
+            return updated ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var caixa = await _service.Delete(id);
-
-                if (caixa is null)
-                    return NotFound("Caixa não encontrado!");
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
+        [HttpGet("detalhado")]
+        public async Task<ActionResult<IEnumerable<CaixaDetalhadoDto>>> GetAllDetalhado()
+        {
+            var caixasComDetalhes = await _service.GetAllDetalhadoAsync();
+            var caixasDto = _mapper.Map<List<CaixaDetalhadoDto>>(caixasComDetalhes);
+            return Ok(caixasDto);
+        }
+
+
     }
 }

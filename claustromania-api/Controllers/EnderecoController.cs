@@ -1,104 +1,68 @@
-﻿using Claustromania.Dtos;
+﻿using Claustromania.DTOs;
+using Claustromania.Models;
 using Claustromania.Services;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Claustromania.Dtos;
 
 namespace Claustromania.Controllers
 {
-    [Route("endereço")]
     [ApiController]
-
+    [Route("api/[controller]")]
     public class EnderecoController : ControllerBase
     {
         private readonly EnderecoService _service;
+        private readonly IMapper _mapper;
 
-        public EnderecoController(EnderecoService service)
+        public EnderecoController(EnderecoService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<EnderecoDto>>> GetAll()
         {
-            var listaend = await _service.GetAll();
-
-            return Ok(listaend);
+            var lista = await _service.GetAllAsync();
+            return Ok(_mapper.Map<List<EnderecoDto>>(lista));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<ActionResult<EnderecoDto>> GetById(Guid id)
         {
-            try
-            {
-                var enderecos = await _service.GetOneById(id);
-
-                if (enderecos is null)
-                {
-                    return NotFound("Informacao nao encontrada!");
-                }
-
-                return Ok(enderecos);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var endereco = await _service.GetByIdAsync(id);
+            return endereco == null ? NotFound() : Ok(_mapper.Map<EnderecoDto>(endereco));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] EnderecoDto item)
+        public async Task<ActionResult<EnderecoDto>> Create([FromBody] EnderecoDto dto)
         {
-            try
-            {
-                var endereco = await _service.Create(item);
-
-                if (endereco is null)
-                {
-                    return Problem("Ocorreram erros ao salvar!");
-                }
-
-                return Created("", endereco);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Erro: " + ex.InnerException?.Message ?? ex.Message);
-                throw;
-            }
+            var entity = _mapper.Map<Endereco>(dto);
+            var criado = await _service.CreateAsync(entity);
+            return CreatedAtAction(nameof(GetById), new { id = criado.Id }, _mapper.Map<EnderecoDto>(criado));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] EnderecoDto item)
+        public async Task<IActionResult> Update(Guid id, [FromBody] EnderecoDto dto)
         {
-            try
-            {
-                var endereco = await _service.Update(id, item);
-
-                if (endereco is null)
-                    return NotFound();
-
-                return Ok(endereco);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            if (id != dto.Id) return BadRequest();
+            var atualizado = await _service.UpdateAsync(_mapper.Map<Endereco>(dto));
+            return atualizado ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var endereco = await _service.Delete(id);
+            var removido = await _service.DeleteAsync(id);
+            return removido ? NoContent() : NotFound();
+        }
 
-                if (endereco == null)
-                    return NotFound();
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+        [HttpGet("Pessoas/{id}")] 
+        public async Task<ActionResult<EnderecoDetalhadoDto>> GetByIdDetalhado(Guid id)
+        {
+            var enderecoComPessoas = await _service.GetByIdDetalhadoAsync(id);
+            if (enderecoComPessoas == null) return NotFound();
+            return Ok(_mapper.Map<EnderecoDetalhadoDto>(enderecoComPessoas));
         }
     }
 }

@@ -1,29 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
 using Claustromania.Dtos;
 using Claustromania.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Claustromania.Controllers
 {
-    [Route("pessoa")]
     [ApiController]
+    [Route("pessoa")]
     public class PessoaController : ControllerBase
     {
         private readonly PessoaService _service;
 
-        public PessoaController(PessoaService service)
+        private readonly IMapper _mapper; 
+
+
+        public PessoaController(PessoaService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var listaPessoas = await _service.GetAll();
-            return Ok(listaPessoas);
+            var lista = await _service.GetAll();
+            return Ok(lista);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<IActionResult> GetOne(Guid id)
         {
             try
             {
@@ -32,7 +37,7 @@ namespace Claustromania.Controllers
             }
             catch (Exception ex)
             {
-                return Problem(ex.Message);
+                return Problem(detail: ex.Message, title: "Erro ao buscar pessoa");
             }
         }
 
@@ -41,42 +46,52 @@ namespace Claustromania.Controllers
         {
             try
             {
-                var pessoa = await _service.Create(item);
-                return pessoa is null ? Problem("Erro ao criar") : Created("", pessoa);
+
+                var pessoaDtoResult = await _service.Create(item);
+                return CreatedAtAction(nameof(GetOne), new { id = pessoaDtoResult.Id }, pessoaDtoResult);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Erro: " + ex.InnerException?.Message ?? ex.Message);
-                return Problem(ex.Message);
+                return Problem(detail: ex.Message, title: "Erro ao criar pessoa");
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] PessoaDto item)
+        public async Task<IActionResult> Put(Guid id, [FromBody] PessoaDto item)
         {
             try
             {
-                var pessoa = await _service.Update(id, item);
-                return pessoa is null ? NotFound() : Ok(pessoa);
+                // A senha será hashed dentro do PessoaService se fornecida
+                var pessoaDtoResult = await _service.Update(id, item);
+                return pessoaDtoResult is null ? NotFound() : Ok(pessoaDtoResult);
+
             }
             catch (Exception ex)
             {
-                return Problem(ex.Message);
+                return Problem(detail: ex.Message, title: "Erro ao atualizar pessoa");
             }
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
-                var pessoa = await _service.Delete(id);
-                return pessoa is null ? NotFound() : NoContent();
+                var sucesso = await _service.Delete(id);
+                return sucesso ? NoContent() : NotFound();
             }
             catch (Exception ex)
             {
-                return Problem(ex.Message);
+                return Problem(detail: ex.Message, title: "Erro ao excluir pessoa");
             }
+        }
+
+        [HttpGet("porCidade/{cidade}")]
+        public async Task<ActionResult<IEnumerable<PessoaDto>>> GetByCidade(string cidade)
+        {
+            var pessoas = await _service.GetPessoasByCidadeAsync(cidade);
+            // Como o serviço retorna Pessoa (modelo), precisamos mapear para PessoaDto
+            return Ok(_mapper.Map<List<PessoaDto>>(pessoas));
         }
     }
 }

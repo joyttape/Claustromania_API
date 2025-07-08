@@ -1,108 +1,60 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Claustromania.Dtos;
+﻿using Claustromania.DTOs;
 using Claustromania.Models;
-using Claustromania.DataContexts;
-using Microsoft.EntityFrameworkCore;
 using Claustromania.Services;
-
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Claustromania.Dtos;
 
 namespace Claustromania.Controllers
 {
-    [Route("jogos")]
     [ApiController]
+    [Route("api/[controller]")]
     public class JogoController : ControllerBase
     {
         private readonly JogoService _service;
+        private readonly IMapper _mapper;
 
-        public JogoController(JogoService service)
+        public JogoController(JogoService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<JogoDto>>> GetAll()
         {
-            var listajogos = await _service.GetAll();
-
-            return Ok(listajogos);
+            var jogos = await _service.GetAllAsync();
+            return Ok(_mapper.Map<List<JogoDto>>(jogos));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOne(int id)
+        public async Task<ActionResult<JogoDto>> GetById(Guid id)
         {
-            try
-            {
-                var jogos = await _service.GetOneById(id);
-
-                if (jogos is null)
-                {
-                    return NotFound("Informacao nao encontrada!");
-                }
-
-                return Ok(jogos);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var jogo = await _service.GetByIdAsync(id);
+            return jogo == null ? NotFound() : Ok(_mapper.Map<JogoDto>(jogo));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] JogoDto jogo)
+        public async Task<ActionResult<JogoDto>> Create([FromBody] JogoDto dto)
         {
-            try
-            {
-                var jogos = await _service.Create(jogo);
-
-                if (jogos is null)
-                {
-                    return Problem("Ocorreram erros ao salvar!");
-                }
-
-                return Created("", jogos);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Erro: " + ex.InnerException?.Message ?? ex.Message);
-                throw;
-            }
+            var entity = _mapper.Map<Jogo>(dto);
+            var created = await _service.CreateAsync(entity);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<JogoDto>(created));
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] JogoDto item)
+        public async Task<IActionResult> Update(Guid id, [FromBody] JogoDto dto)
         {
-            try
-            {
-                var jogos = await _service.Update(id, item);
-
-                if (jogos is null)
-                    return NotFound();
-
-                return Ok(jogos);
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            if (id != dto.Id) return BadRequest();
+            var updated = await _service.UpdateAsync(_mapper.Map<Jogo>(dto));
+            return updated ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            try
-            {
-                var jogo = await _service.Delete(id);
-
-                if (jogo == null)
-                    return NotFound();
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return Problem(ex.Message);
-            }
+            var deleted = await _service.DeleteAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
     }
 }

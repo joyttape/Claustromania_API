@@ -1,30 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 
 namespace Claustromania.Dtos
 {
     public class EnderecoDto
     {
-
-        [Required]
-        public required string Logradouro { get; set; }
-
-        [Required]
-        public required string Cidade { get; set; }
-
-        [Required]
-        public required string CEP { get; set; }
-
-        [Required]
-        public required string Numero { get; set; }
-
-        [Required]
-        public required string Estado { get; set; }
-
-        [Required]
-        public required string Bairro { get; set; }
-
-        [Required]
-        public required string Complemento { get; set; }
-
+        public Guid Id { get; set; }
+        public string Logradouro { get; set; }
+        public string CEP { get; set; }
+        public string Cidade { get; set; }
+        public string Numero { get; set; }
+        public string Estado { get; set; }
+        public string Bairro { get; set; }
+        public string? Complemento { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Claustromania.DataContexts;
-using Claustromania.Dtos;
+﻿using Claustromania.Data;
 using Claustromania.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,113 +6,65 @@ namespace Claustromania.Services
 {
     public class CaixaService
     {
-        private readonly AppDbContext _context;
+        private readonly ClaustromaniaDbContext _context;
 
-        public CaixaService(AppDbContext context)
+
+
+        public CaixaService(ClaustromaniaDbContext context)
         {
             _context = context;
         }
 
-        public async Task<ICollection<Caixa>> GetAll()
+        public async Task<List<Caixa>> GetAllAsync()
         {
-            return await _context.Set<Caixa>().ToListAsync();
+            return await _context.Caixas.ToListAsync();
         }
 
-        public async Task<Caixa?> GetOneById(Guid id)
+        public async Task<Caixa?> GetByIdAsync(Guid id)
         {
-            try
-            {
-                return await _context.Set<Caixa>()
-                    .SingleOrDefaultAsync(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro ao buscar caixa: {ex.Message}");
-            }
+            return await _context.Caixas.FindAsync(id);
         }
 
-        public async Task<Caixa?> Create(CaixaDto dto)
+        public async Task<Caixa> CreateAsync(Caixa caixa)
         {
-            try
-            {
-                var caixa = new Caixa
-                {
-                    Id = Guid.NewGuid(),
-                    DataHoraAbertura = dto.DataHoraAbertura,
-                    DataHoraFechamento = dto.DataHoraFechamento,
-                    ValorInicial = (decimal)dto.ValorInicial,
-                    ValorFinal = dto.ValorFinal.HasValue ? (decimal)dto.ValorFinal.Value : null,
-
-                    TotalTransacoes = dto.TotalTransacoes,
-                    Status = dto.Status,
-                    FuncionarioNome = dto.FuncionarioNome,
-                    Observacoes = dto.Observacoes
-                };
-
-                await _context.Set<Caixa>().AddAsync(caixa);
-                await _context.SaveChangesAsync();
-
-                return caixa;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro ao criar caixa: {ex.Message}");
-            }
+            caixa.Id = Guid.NewGuid();
+            _context.Caixas.Add(caixa);
+            await _context.SaveChangesAsync();
+            return caixa;
         }
 
-        public async Task<Caixa?> Update(Guid id, CaixaDto dto)
+        public async Task<bool> UpdateAsync(Caixa caixa)
         {
-            try
-            {
-                var caixa = await GetOneById(id);
+            var existing = await _context.Caixas.FindAsync(caixa.Id);
+            if (existing == null) return false;
 
-                if (caixa is null)
-                    return null;
-
-                caixa.DataHoraAbertura = dto.DataHoraAbertura;
-                caixa.DataHoraFechamento = dto.DataHoraFechamento;
-                caixa.ValorInicial = dto.ValorInicial;
-                caixa.ValorFinal = dto.ValorFinal;
-                caixa.TotalTransacoes = dto.TotalTransacoes;
-                caixa.Status = dto.Status;
-                caixa.FuncionarioNome = dto.FuncionarioNome;
-                caixa.Observacoes = dto.Observacoes;
-
-                _context.Set<Caixa>().Update(caixa);
-                await _context.SaveChangesAsync();
-
-                return caixa;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Erro ao atualizar caixa: {ex.Message}");
-            }
+            _context.Entry(existing).CurrentValues.SetValues(caixa);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task<Caixa?> Delete(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            try
-            {
-                var caixa = await GetOneById(id);
+            var caixa = await _context.Caixas.FindAsync(id);
+            if (caixa == null) return false;
 
-                if (caixa is null)
-                    return null;
-
-                _context.Set<Caixa>().Remove(caixa);
-                await _context.SaveChangesAsync();
-
-                return caixa;
-            }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine($"Erro ao deletar caixa: {ex.InnerException?.Message}");
-                return null;
-            }
+            _context.Caixas.Remove(caixa);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        private async Task<bool> Exists(Guid id)
+        public async Task<IEnumerable<Caixa>> GetAllDetalhadoAsync()
         {
-            return await _context.Set<Caixa>().AnyAsync(c => c.Id == id);
+            return await _context.Caixas
+                                 .Include(c => c.Funcionario)
+                                  .ThenInclude(f => f.Pessoa)
+                                 .Include(c => c.Unidade)
+                                 .ThenInclude(u => u.Endereco) // <-- Adicionado
+
+                                 .ToListAsync();
         }
+
     }
+
+
 }
