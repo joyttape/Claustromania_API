@@ -1,22 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using Claustromania.Enums;
 
 namespace Claustromania.Dtos
 {
     public class JogoDto
     {
-        [Required]
-        public required string Nome { get; set; }
-
-        [Required]
-        public required string Descricao { get; set; }
-
-        [Required]
-        public required string Duracao { get; set; }
-
-        [Required]
-        public required string Dificuldade { get; set; }
-
-        [Required]
-        public required double Preco { get; set; }
+        public Guid Id { get; set; }
+        public string Nome { get; set; }
+        public string Descricao { get; set; }
+        public string Duracao { get; set; }
+        public DificuldadeJogo? Dificuldade { get; set; }
+        public decimal? Preco { get; set; }
     }
 }

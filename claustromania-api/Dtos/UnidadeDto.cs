@@ -1,24 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 
-namespace Claustromania.Dtos
+namespace Claustromania.DTOs
 {
     public class UnidadeDto
     {
-
-        [Required]
-        public required string NomeUnidade { get; set; }
-
-        [Required]
-        public required int Capacidade { get; set; }
-
-        [Required]
-        public required string Horario_Func { get; set; }
-
-        [Required]
-        public required string Telefone { get; set; }
-
-        [Required]
-        public required bool Status { get; set; }
-
+        public Guid Id { get; set; }
+        public string Nome { get; set; }
+        public int? Capacidade { get; set; }
+        public TimeSpan? HorarioAbertura { get; set; }
+        public TimeSpan? HorarioFechamento { get; set; }
+        public string Telefone { get; set; }
+        public bool Ativa { get; set; }
+        public Guid? FkEndereco { get; set; }
+        public Guid? FkGerente { get; set; }
     }
 }

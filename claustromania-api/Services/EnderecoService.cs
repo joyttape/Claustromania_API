@@ -1,133 +1,66 @@
-﻿using Claustromania.DataContexts;
-using Claustromania.Dtos;
+﻿
+using Claustromania.Data;
 using Claustromania.Models;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Claustromania.Services
 {
     public class EnderecoService
     {
+        private readonly ClaustromaniaDbContext _context;
 
-        private readonly AppDbContext _context;
-
-        public EnderecoService(AppDbContext context)
+        public EnderecoService(ClaustromaniaDbContext context)
         {
             _context = context;
         }
 
-        public async Task<ICollection<Endereco>> GetAll()
+        public async Task<List<Endereco>> GetAllAsync()
         {
-            var list = await _context.Endereco.ToListAsync();
-
-            return list;
+            return await _context.Enderecos.ToListAsync();
         }
 
-        public async Task<Endereco?> GetOneById(int id)
+        public async Task<Endereco?> GetByIdAsync(Guid id)
         {
-            try
-            {
-                return await _context.Endereco
-                    .SingleOrDefaultAsync(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return await _context.Enderecos.FindAsync(id);
         }
 
-        public async Task<Endereco?> Create(EnderecoDto end)
+        public async Task<Endereco> CreateAsync(Endereco endereco)
         {
-            try
-            {
-                var logradouro = end.Logradouro;
-                var cep = end.CEP;
-                var cidade = end.Cidade;
-                var numero = end.Numero;
-                var estado = end.Estado;
-                var bairro = end.Bairro;
-                var complemento = end.Complemento;
-
-                var newEnd = new Endereco
-
-                {
-                   Logradouro = end.Logradouro,
-                   Cidade = end.Cidade,
-                   Numero = end.Numero,
-                   Estado = end.Estado,
-                   Bairro = end.Bairro,
-                   Complemento = end.Complemento,
-                   CEP = end.CEP
-                };
-
-                await _context.Endereco.AddAsync(newEnd);
-                await _context.SaveChangesAsync();
-
-                return newEnd;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            endereco.Id = Guid.NewGuid();
+            _context.Enderecos.Add(endereco);
+            await _context.SaveChangesAsync();
+            return endereco;
         }
 
-        public async Task<Endereco?> Update(int id, EnderecoDto end)
+        public async Task<bool> UpdateAsync(Endereco endereco)
         {
-            try
-            {
-                var _end = await GetOneById(id);
+            var existing = await _context.Enderecos.FindAsync(endereco.Id);
+            if (existing == null) return false;
 
-                if (_end is null)
-                {
-                    return _end;
-                }
-
-                _end.Logradouro = end.Logradouro;
-                _end.CEP = end.CEP;
-                _end.Cidade = end.Cidade;
-                _end.Numero = end.Numero;
-                _end.Estado = end.Estado;
-                _end.Bairro = end.Bairro;
-                _end.Complemento = end.Complemento;
-
-                _context.Endereco.Update(_end);
-                await _context.SaveChangesAsync();
-
-                return _end;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            _context.Entry(existing).CurrentValues.SetValues(endereco);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task<Endereco?> Delete(int id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            try
-            {
-                var end = await _context.Endereco.FindAsync(id);
+            var endereco = await _context.Enderecos.FindAsync(id);
+            if (endereco == null) return false;
 
-                if (end == null)
-                    return null;
-
-                _context.Endereco.Remove(end);
-                await _context.SaveChangesAsync();
-                return end;
-
-            }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine($"Erro ao deletar sala: {ex.InnerException?.Message}");
-                return null;
-            }
+            _context.Enderecos.Remove(endereco);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
 
-        private async Task<bool> Exist(int id)
-        {
-            return await _context.Endereco.AnyAsync(c => c.Id == id);
-        }
 
+        public async Task<Endereco?> GetByIdDetalhadoAsync(Guid id)
+        {
+            return await _context.Enderecos
+                                 .Include(e => e.Pessoas) // <-- Inclui a coleção de Pessoas
+                                 .FirstOrDefaultAsync(e => e.Id == id);
+
+
+        }
     }
 }

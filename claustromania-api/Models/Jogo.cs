@@ -1,27 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Claustromania.Enums;
 
 namespace Claustromania.Models
 {
     [Table("jogo")]
-
     public class Jogo
     {
+        [Key]
         [Column("id")]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
+        [Required]
         [Column("nome")]
-        public required string Nome { get; set; }
+        public string Nome { get; set; }
 
         [Column("descricao")]
-        public required string Descricao { get; set; }
+        public string Descricao { get; set; }
 
         [Column("duracao")]
-        public required string Duracao { get; set; }
+        public string Duracao { get; set; }
 
         [Column("dificuldade")]
-        public required string Dificuldade { get; set; }
+        public DificuldadeJogo? Dificuldade { get; set; }
 
         [Column("preco")]
-        public required double Preco { get; set; }
+        public decimal? Preco { get; set; }
     }
 }

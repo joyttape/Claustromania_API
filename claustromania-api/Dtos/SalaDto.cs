@@ -1,17 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 
-namespace Claustromania.Dtos
+namespace Claustromania.DTOs
 {
     public class SalaDto
     {
-        [Required]
-        public required string Numero { get; set; }
-
-        [Required]
-        public required int Jogadores_num { get; set; }
-
-        [Required]
-        public required bool Status { get; set; }
-
+        public Guid Id { get; set; }
+        public string Nome { get; set; }
+        public int? Capacidade { get; set; }
+        public bool Ativa { get; set; }
+        public Guid? FkUnidade { get; set; }
     }
 }

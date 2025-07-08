@@ -1,5 +1,4 @@
-﻿using Claustromania.DataContexts;
-using Claustromania.Dtos;
+﻿using Claustromania.Data;
 using Claustromania.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,119 +6,49 @@ namespace Claustromania.Services
 {
     public class JogoService
     {
-        private readonly AppDbContext _context;
+        private readonly ClaustromaniaDbContext _context;
 
-        public JogoService(AppDbContext context)
+        public JogoService(ClaustromaniaDbContext context)
         {
             _context = context;
         }
 
-        public async Task<ICollection<Jogo>> GetAll()
+        public async Task<List<Jogo>> GetAllAsync()
         {
-            var jogos = await _context.Jogo.ToListAsync();
-
-            return jogos;
+            return await _context.Jogos.ToListAsync();
         }
 
-        public async Task<Jogo?> GetOneById(int id)
+        public async Task<Jogo?> GetByIdAsync(Guid id)
         {
-            try
-            {
-                return await _context.Jogo
-                    .SingleOrDefaultAsync(x => x.Id == id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return await _context.Jogos.FindAsync(id);
         }
 
-        public async Task<Jogo?> Create(JogoDto jogos)
+        public async Task<Jogo> CreateAsync(Jogo jogo)
         {
-            try
-            {
-                var nome = jogos.Nome;
-                var descricao = jogos.Descricao;
-                var duracao = jogos.Duracao;
-                var dificuldade = jogos.Dificuldade;
-                var preco = jogos.Preco;
-
-                var newJogo = new Jogo
-
-                {
-                    Nome = jogos.Nome,
-                    Descricao = jogos.Descricao,
-                    Duracao = jogos.Duracao,
-                    Dificuldade = jogos.Dificuldade,
-                    Preco = jogos.Preco
-                };
-
-                await _context.Jogo.AddAsync(newJogo);
-                await _context.SaveChangesAsync();
-
-                return newJogo;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            jogo.Id = Guid.NewGuid();
+            _context.Jogos.Add(jogo);
+            await _context.SaveChangesAsync();
+            return jogo;
         }
 
-        public async Task<Jogo?> Update(int id, JogoDto jogos)
+        public async Task<bool> UpdateAsync(Jogo jogo)
         {
-            try
-            {
-                var _jogo = await GetOneById(id);
+            var existing = await _context.Jogos.FindAsync(jogo.Id);
+            if (existing == null) return false;
 
-                if (_jogo is null)
-                {
-                    return _jogo;
-                }
-
-                _jogo.Nome = jogos.Nome;
-                _jogo.Descricao = jogos.Descricao;
-                _jogo.Dificuldade = jogos.Dificuldade;
-                _jogo.Preco = jogos.Preco;
-                _jogo.Duracao = jogos.Duracao;
-                
-                _context.Jogo.Update(_jogo);
-                await _context.SaveChangesAsync();
-
-                return _jogo;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            _context.Entry(existing).CurrentValues.SetValues(jogo);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task<Jogo?> Delete(int id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            try
-            {
-                var jogo = await _context.Jogo.FindAsync(id);
+            var jogo = await _context.Jogos.FindAsync(id);
+            if (jogo == null) return false;
 
-                if (jogo == null)
-                    return null;
-
-                _context.Jogo.Remove(jogo);
-                await _context.SaveChangesAsync();
-                return jogo;
-
-            }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine($"Erro ao deletar sala: {ex.InnerException?.Message}");
-                return null;
-            }
+            _context.Jogos.Remove(jogo);
+            await _context.SaveChangesAsync();
+            return true;
         }
-
-
-        private async Task<bool> Exist(int id)
-        {
-            return await _context.Jogo.AnyAsync(c => c.Id == id);
-        }
-
     }
 }

@@ -1,23 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 
-namespace Claustromania.Dtos
+namespace Claustromania.DTOs
 {
     public class FuncionarioDto
     {
-
-        [Required]
-        public required string Cargo { get; set; }
-
-        [Required]
-
-        public required double Salario { get; set; }
-
-        [Required]
-
-        public required string data_contratacao { get; set; }
-
-        [Required]
-
-        public required string Turno { get; set; }
+        public Guid Id { get; set; }
+        public string Cargo { get; set; }
+        public decimal? Salario { get; set; }
+        public DateTime? DataContratacao { get; set; }
+        public string Turno { get; set; }
+        public Guid FkPessoa { get; set; }
     }
 }

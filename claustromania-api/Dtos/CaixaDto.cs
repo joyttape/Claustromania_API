@@ -1,27 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 
-namespace Claustromania.Dtos
+namespace Claustromania.DTOs
 {
     public class CaixaDto
     {
-        [Required]
-        public required DateTime DataHoraAbertura { get; set; }
-
+        public Guid Id { get; set; }
+        public string Nome { get; set; }
+        public Guid FkUnidade { get; set; }
+        public Guid FkFuncionario { get; set; }
+        public DateTime DataHoraAbertura { get; set; }
         public DateTime? DataHoraFechamento { get; set; }
-
-        [Required]
-        public required decimal ValorInicial { get; set; }
-
+        public decimal ValorInicial { get; set; }
         public decimal? ValorFinal { get; set; }
-
-        public int? TotalTransacoes { get; set; }
-
-        [Required]
-        public required string Status { get; set; }
-
-        [Required]
-        public required string FuncionarioNome { get; set; }
-
+        public int TotalTransacoes { get; set; }
+        public string Status { get; set; }
         public string? Observacoes { get; set; }
     }
 }
