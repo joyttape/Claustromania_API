@@ -14,13 +14,13 @@ namespace Claustromania.Models
 
         [Required]
         [Column("nome")]
-        public string Nome { get; set; }
+        public string? Nome { get; set; }
 
         [Column("descricao")]
-        public string Descricao { get; set; }
+        public string? Descricao { get; set; }
 
         [Column("duracao")]
-        public string Duracao { get; set; }
+        public string? Duracao { get; set; }
 
         [Column("dificuldade")]
         public DificuldadeJogo? Dificuldade { get; set; }
