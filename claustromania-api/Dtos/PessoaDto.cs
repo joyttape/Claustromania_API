@@ -8,7 +8,7 @@ namespace Claustromania.Dtos
 
     {
 
-        public Guid Id { get; set; }  // <--- ADICIONE ISSO
+        public Guid Id { get; set; }  
 
 
 
@@ -32,7 +32,7 @@ namespace Claustromania.Dtos
         public Guid FkEndereco { get; set; }
 
 
-        public string Senha { get; set; } // <-- Adicionado
+        public string Senha { get; set; } 
 
 
     }

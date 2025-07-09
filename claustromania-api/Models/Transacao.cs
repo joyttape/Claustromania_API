@@ -13,15 +13,14 @@ namespace Claustromania.Models
 
         [Required]
         [Column("valor")]
-        public decimal Valor { get; set; }
+        public decimal? Valor { get; set; }
 
         [Required]
-        [Column("data_transacao")]
+        [Column("data_hora")]
         public DateTime DataTransacao { get; set; }
 
-        [Required]
         [Column("forma_pagamento")]
-        public string FormaPagamento { get; set; }
+        public string? FormaPagamento { get; set; }
 
         [Required]
         [Column("fk_caixa")]

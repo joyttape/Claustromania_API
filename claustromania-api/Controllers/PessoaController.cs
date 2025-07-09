@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Claustromania.Dtos;
+using Claustromania.Models; // Adicionado para usar o modelo Pessoa diretamente
 using Claustromania.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,7 @@ namespace Claustromania.Controllers
     public class PessoaController : ControllerBase
     {
         private readonly PessoaService _service;
-
-        private readonly IMapper _mapper; 
-
+        private readonly IMapper _mapper;
 
         public PessoaController(PessoaService service, IMapper mapper)
         {
@@ -46,7 +45,7 @@ namespace Claustromania.Controllers
         {
             try
             {
-
+                // A senha será hashed dentro do PessoaService
                 var pessoaDtoResult = await _service.Create(item);
                 return CreatedAtAction(nameof(GetOne), new { id = pessoaDtoResult.Id }, pessoaDtoResult);
             }
@@ -64,7 +63,6 @@ namespace Claustromania.Controllers
                 // A senha será hashed dentro do PessoaService se fornecida
                 var pessoaDtoResult = await _service.Update(id, item);
                 return pessoaDtoResult is null ? NotFound() : Ok(pessoaDtoResult);
-
             }
             catch (Exception ex)
             {
@@ -90,7 +88,6 @@ namespace Claustromania.Controllers
         public async Task<ActionResult<IEnumerable<PessoaDto>>> GetByCidade(string cidade)
         {
             var pessoas = await _service.GetPessoasByCidadeAsync(cidade);
-            // Como o serviço retorna Pessoa (modelo), precisamos mapear para PessoaDto
             return Ok(_mapper.Map<List<PessoaDto>>(pessoas));
         }
     }

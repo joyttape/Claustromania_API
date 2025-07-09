@@ -3,7 +3,6 @@ using Claustromania.Data;
 using Claustromania.Dtos;
 using Claustromania.Models;
 using Microsoft.EntityFrameworkCore;
-using BCrypt.Net; // Adicione este using
 
 namespace Claustromania.Services
 {
@@ -32,10 +31,7 @@ namespace Claustromania.Services
 
         public async Task<PessoaDto> Create(PessoaDto dto)
         {
-            if (!string.IsNullOrEmpty(dto.Senha))
-            {
-                dto.Senha = BCrypt.Net.BCrypt.HashPassword(dto.Senha); // <-- Hashing aqui
-            }
+
             var pessoa = _mapper.Map<Pessoa>(dto);
             pessoa.Id = Guid.NewGuid(); // garantir que a chave seja definida aqui
             _context.Pessoas.Add(pessoa);
@@ -48,13 +44,7 @@ namespace Claustromania.Services
             var pessoa = await _context.Pessoas.FindAsync(id);
             if (pessoa is null) return null;
 
-            // Se uma nova senha for fornecida no DTO, faça o hash e atualize
-            if (!string.IsNullOrEmpty(dto.Senha))
-            {
-                pessoa.Senha = BCrypt.Net.BCrypt.HashPassword(dto.Senha); // <-- Hashing aqui
-            }
-            // IMPORTANTE: Se dto.Senha for nula ou vazia, a senha existente no banco NÃO será alterada.
-            // O AutoMapper mapearia outras propriedades, mas a senha é tratada explicitamente.
+            
             _mapper.Map(dto, pessoa); // Mapeia as outras propriedades
 
             await _context.SaveChangesAsync();
@@ -77,6 +67,13 @@ namespace Claustromania.Services
                                  .Include(p => p.Endereco) // Inclui o Endereco da Pessoa
                                  .Where(p => p.Endereco != null && p.Endereco.Cidade == cidade)
                                  .ToListAsync();
+        }
+
+        // Se você adicionou o método para autenticação, ele também precisará ser ajustado
+        public async Task<Pessoa?> GetPessoaByEmailOrCpfAsync(string identifier)
+        {
+            return await _context.Pessoas
+                                 .FirstOrDefaultAsync(p => p.Email == identifier || p.CPF == identifier);
         }
     }
 }

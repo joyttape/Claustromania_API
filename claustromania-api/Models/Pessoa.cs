@@ -23,7 +23,7 @@ namespace Claustromania.Models
         [Column("Email")]
         public string? Email { get; set; }
         // Chave estrangeira para Endereco (se uma pessoa tem um endereço)
-        [Column("fk_endereco")] // Ajuste o nome da coluna se for diferente no seu banco
+        [Column("fk_endereco")] 
         public Guid? FkEndereco { get; set; }
         
         // Propriedade de navegação para Endereco
