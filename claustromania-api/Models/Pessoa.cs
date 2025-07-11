@@ -28,9 +28,10 @@ namespace Claustromania.Models
         
         // Propriedade de navegação para Endereco
         [ForeignKey("FkEndereco")]
-        public Endereco? Endereco { get; set; } // <-- Adicione esta linha
+        public Endereco? Endereco { get; set; } 
 
         [Column("senha_hash")]
         public string? Senha { get; set; }
+
     }
 }

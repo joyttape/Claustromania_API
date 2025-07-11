@@ -1,5 +1,7 @@
 ﻿using System;
+using Claustromania.Models;
 using Claustromania.Enums;
+using Claustromania.Dtos;
 
 namespace Claustromania.DTOs
 {
@@ -7,6 +9,7 @@ namespace Claustromania.DTOs
     {
         public Guid Id { get; set; }
         public NivelExperiencia NivelExperiencia { get; set; }
-        public Guid FkPessoa { get; set; }
+        public PessoaDto Pessoa { get; set; }
+
     }
 }

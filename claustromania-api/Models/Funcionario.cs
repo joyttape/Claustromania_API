@@ -24,11 +24,11 @@ namespace Claustromania.Models
         [Column("turno")]
         public string? Turno { get; set; }
 
+        [ForeignKey("FkPessoa")]
+        public Pessoa Pessoa { get; set; }
+
         [Required]
         [Column("fk_pessoa")]
         public Guid FkPessoa { get; set; }
-
-        [ForeignKey("FkPessoa")]
-        public Pessoa Pessoa { get; set; }
     }
 }

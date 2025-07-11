@@ -16,6 +16,7 @@ namespace Claustromania.Services
 
         public async Task<List<Endereco>> GetAllAsync()
         {
+            
             return await _context.Enderecos.ToListAsync();
         }
 

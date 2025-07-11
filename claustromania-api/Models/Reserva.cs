@@ -23,10 +23,17 @@ namespace Claustromania.Models
         [Column("fk_cliente")]
         public Guid FkCliente { get; set; }
 
+        [ForeignKey("FkCliente")]
+        public Cliente? Cliente { get; set; }
+
         [Required]
         [Column("fk_sala_jogo")]
 
         public Guid FkSalaJogo { get; set; }
+
+        [ForeignKey("FkSalaJogo")]
+
+        public SalaJogo? SalaJogo { get; set; }
 
 
     }

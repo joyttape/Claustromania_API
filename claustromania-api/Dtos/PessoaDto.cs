@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using Claustromania.DTOs;
 
 namespace Claustromania.Dtos
 {
@@ -28,11 +29,11 @@ namespace Claustromania.Dtos
 
         public string? Email { get; set; }
 
+        public string Senha { get; set; }
 
-        public Guid FkEndereco { get; set; }
+        public EnderecoDto Endereco { get; set; }
 
 
-        public string Senha { get; set; } 
 
 
     }

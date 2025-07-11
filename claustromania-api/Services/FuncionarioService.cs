@@ -15,12 +15,12 @@ namespace Claustromania.Services
 
         public async Task<List<Funcionario>> GetAllAsync()
         {
-            return await _context.Funcionarios.ToListAsync();
+            return await _context.Funcionarios.Include(f => f.Pessoa).ThenInclude(p => p.Endereco).ToListAsync();
         }
 
         public async Task<Funcionario?> GetByIdAsync(Guid id)
         {
-            return await _context.Funcionarios.FindAsync(id);
+            return await _context.Funcionarios.Include(f => f.Pessoa).ThenInclude(p => p.Endereco).FirstOrDefaultAsync(f => f.Id == id);
         }
 
         public async Task<Funcionario> CreateAsync(Funcionario funcionario)
@@ -52,3 +52,5 @@ namespace Claustromania.Services
         }
     }
 }
+
+

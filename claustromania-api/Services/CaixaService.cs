@@ -17,12 +17,24 @@ namespace Claustromania.Services
 
         public async Task<List<Caixa>> GetAllAsync()
         {
-            return await _context.Caixas.ToListAsync();
+            return await _context.Caixas
+                                 .Include(c => c.Funcionario)
+                                    .ThenInclude(f => f.Pessoa)
+                                        .ThenInclude(e => e.Endereco)
+                                 .Include(c => c.Unidade)
+                                 .ThenInclude(u => u.Endereco) 
+
+                                 .ToListAsync();
         }
 
         public async Task<Caixa?> GetByIdAsync(Guid id)
         {
-            return await _context.Caixas.FindAsync(id);
+            return await _context.Caixas
+                .Include(c => c.Funcionario)
+                .ThenInclude(f => f.Pessoa)
+                .Include(c => c.Unidade)
+                .ThenInclude(u => u.Endereco)
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<Caixa> CreateAsync(Caixa caixa)
@@ -57,7 +69,8 @@ namespace Claustromania.Services
         {
             return await _context.Caixas
                                  .Include(c => c.Funcionario)
-                                  .ThenInclude(f => f.Pessoa)
+                                    .ThenInclude(f => f.Pessoa)
+                                        .ThenInclude(e => e.Endereco)
                                  .Include(c => c.Unidade)
                                  .ThenInclude(u => u.Endereco) // <-- Adicionado
 
@@ -65,6 +78,4 @@ namespace Claustromania.Services
         }
 
     }
-
-
 }

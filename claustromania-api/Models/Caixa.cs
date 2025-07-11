@@ -33,7 +33,7 @@ namespace Claustromania.Models
 
         [Required]
         [Column("data_hora_abertura")]
-        public DateTime DataHoraAbertura { get; set; }
+        public DateTime? DataHoraAbertura { get; set; }
 
         [Column("data_hora_fechamento")]
         public DateTime? DataHoraFechamento { get; set; }
