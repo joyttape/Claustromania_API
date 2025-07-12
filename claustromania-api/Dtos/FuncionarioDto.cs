@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Claustromania.Dtos;
+using System;
 
 namespace Claustromania.DTOs
 {
@@ -9,6 +10,6 @@ namespace Claustromania.DTOs
         public decimal? Salario { get; set; }
         public DateTime? DataContratacao { get; set; }
         public string Turno { get; set; }
-        public Guid FkPessoa { get; set; }
+        public PessoaDto Pessoa { get; set; }
     }
 }

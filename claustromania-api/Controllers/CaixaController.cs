@@ -57,10 +57,10 @@ namespace Claustromania.Controllers
             return deleted ? NoContent() : NotFound();
         }
         [HttpGet("detalhado")]
-        public async Task<ActionResult<IEnumerable<CaixaDetalhadoDto>>> GetAllDetalhado()
+        public async Task<ActionResult<IEnumerable<CaixaDto>>> GetAllDetalhado()
         {
             var caixasComDetalhes = await _service.GetAllDetalhadoAsync();
-            var caixasDto = _mapper.Map<List<CaixaDetalhadoDto>>(caixasComDetalhes);
+            var caixasDto = _mapper.Map<List<CaixaDto>>(caixasComDetalhes);
             return Ok(caixasDto);
         }
 

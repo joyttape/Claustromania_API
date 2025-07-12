@@ -50,6 +50,23 @@ namespace Claustromania.Controllers
             return updated ? NoContent() : NotFound();
         }
 
+        [HttpGet("buscar-por-nome")]
+public async Task<IActionResult> BuscarPorNome([FromQuery] string nome)
+{
+    var funcionarios = await _service.GetByNomeAsync(nome);
+    var dtos = _mapper.Map<List<FuncionarioDto>>(funcionarios);
+    return Ok(dtos);
+}
+
+[HttpGet("buscar-por-email")]
+public async Task<IActionResult> BuscarPorEmail([FromQuery] string email)
+{
+    var funcionario = await _service.GetByEmailAsync(email);
+    if (funcionario == null) return NotFound("Funcionário não encontrado.");
+    var dto = _mapper.Map<FuncionarioDto>(funcionario);
+    return Ok(dto);
+}
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

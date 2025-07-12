@@ -13,15 +13,18 @@ namespace Claustromania.Models
 
         [Required]
         [Column("valor")]
-        public decimal Valor { get; set; }
+        public decimal? Valor { get; set; }
 
         [Required]
-        [Column("data_transacao")]
+        [Column("data_hora")]
         public DateTime DataTransacao { get; set; }
 
-        [Required]
+        [Required] // Se a coluna 'tipo' no banco de dados for NOT NULL
+        [Column("tipo")] // Mapeia para a coluna 'tipo' no banco de dados
+        public string Tipo { get; set; }
+
         [Column("forma_pagamento")]
-        public string FormaPagamento { get; set; }
+        public string? FormaPagamento { get; set; }
 
         [Required]
         [Column("fk_caixa")]

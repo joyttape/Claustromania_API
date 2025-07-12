@@ -20,17 +20,25 @@ namespace Claustromania.Models
         [Column("Sexo")]
         public required string? Sexo { get; set; }
 
+
+        [Column("Telefone")]
+
+        public required string? Telefone { get; set; }
+
         [Column("Email")]
         public string? Email { get; set; }
         // Chave estrangeira para Endereco (se uma pessoa tem um endereço)
-        [Column("fk_endereco")] // Ajuste o nome da coluna se for diferente no seu banco
+        [Column("fk_endereco")] 
         public Guid? FkEndereco { get; set; }
         
         // Propriedade de navegação para Endereco
         [ForeignKey("FkEndereco")]
-        public Endereco? Endereco { get; set; } // <-- Adicione esta linha
+        public Endereco? Endereco { get; set; } 
+
+
 
         [Column("senha_hash")]
         public string? Senha { get; set; }
+
     }
 }

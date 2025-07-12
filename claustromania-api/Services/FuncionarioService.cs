@@ -15,16 +15,21 @@ namespace Claustromania.Services
 
         public async Task<List<Funcionario>> GetAllAsync()
         {
-            return await _context.Funcionarios.ToListAsync();
+            return await _context.Funcionarios.Include(f => f.Pessoa).ThenInclude(p => p.Endereco).ToListAsync();
         }
 
         public async Task<Funcionario?> GetByIdAsync(Guid id)
         {
-            return await _context.Funcionarios.FindAsync(id);
+            return await _context.Funcionarios.Include(f => f.Pessoa).ThenInclude(p => p.Endereco).FirstOrDefaultAsync(f => f.Id == id);
         }
 
         public async Task<Funcionario> CreateAsync(Funcionario funcionario)
         {
+            if (await _context.Pessoas.AnyAsync(p => p.CPF == funcionario.Pessoa.CPF))
+            {
+                throw new Exception("CPF já cadastrado.");
+            }
+
             funcionario.Id = Guid.NewGuid();
             _context.Funcionarios.Add(funcionario);
             await _context.SaveChangesAsync();
@@ -41,6 +46,23 @@ namespace Claustromania.Services
             return true;
         }
 
+        public async Task<IEnumerable<Funcionario>> GetByNomeAsync(string nome)
+        {
+            return await _context.Funcionarios
+                                 .Include(f => f.Pessoa)
+                                 .ThenInclude(p => p.Endereco)
+                                 .Where(f => f.Pessoa != null && f.Pessoa.Nome.Contains(nome))
+                                 .ToListAsync();
+        }
+
+        public async Task<Funcionario?> GetByEmailAsync(string email)
+        {
+            return await _context.Funcionarios
+                                 .Include(f => f.Pessoa)
+                                 .ThenInclude(p => p.Endereco)
+                                 .FirstOrDefaultAsync(f => f.Pessoa != null && f.Pessoa.Email == email);
+        }
+
         public async Task<bool> DeleteAsync(Guid id)
         {
             var funcionario = await _context.Funcionarios.FindAsync(id);
@@ -52,3 +74,5 @@ namespace Claustromania.Services
         }
     }
 }
+
+

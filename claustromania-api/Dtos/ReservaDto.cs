@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace Claustromania.DTOs
 {
     public class ReservaDto
@@ -7,7 +8,7 @@ namespace Claustromania.DTOs
         public Guid Id { get; set; }
         public DateTime DataReserva { get; set; }
         public decimal ValorTotal { get; set; }
-        public Guid FkCliente { get; set; }
+        public ClienteDto? Cliente { get; set; }
 
         public Guid FkSalaJogo { get; set; }
  

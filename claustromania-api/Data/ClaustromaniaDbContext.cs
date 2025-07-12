@@ -37,7 +37,7 @@ namespace Claustromania.Data
     .HasOne<Pessoa>() // se quiser acessar Pessoa diretamente, adicione a navigation no model também
     .WithMany()
     .HasForeignKey(t => t.FkPessoa)
-    .OnDelete(DeleteBehavior.SetNull); // ou DeleteBehavior.Restrict dependendo da lógica
+    .OnDelete(DeleteBehavior.SetNull);
 
 
             modelBuilder.Entity<Transacao>()
@@ -58,4 +58,3 @@ namespace Claustromania.Data
 
     }
 }
-

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Claustromania.Models;
+using Claustromania.Dtos;
+using System;
 
 namespace Claustromania.DTOs
 {
@@ -6,12 +8,18 @@ namespace Claustromania.DTOs
     {
         public Guid Id { get; set; }
         public string Nome { get; set; }
-        public int? Capacidade { get; set; }
-        public TimeSpan? HorarioAbertura { get; set; }
-        public TimeSpan? HorarioFechamento { get; set; }
+        public int Capacidade { get; set; }
+        public string? HorarioAbertura { get; set; }
+        public string? HorarioFechamento { get; set; }
         public string Telefone { get; set; }
         public bool Ativa { get; set; }
-        public Guid? FkEndereco { get; set; }
-        public Guid? FkGerente { get; set; }
+
+        public EnderecoDto? Endereco { get; set; }
+        public FuncionarioDto? Funcionario { get; set; }
+
+
+
+
+
     }
 }
