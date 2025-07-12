@@ -203,7 +203,14 @@ namespace Claustromania.Services
             await _context.SaveChangesAsync();
             return true;
         }
-  
+        public async Task<Caixa> CreateResumidoAsync(Caixa caixa)
+        {
+            caixa.Id = Guid.NewGuid();
+            _context.Caixas.Add(caixa);
+            await _context.SaveChangesAsync();
+            return caixa;
+        }
+
         public async Task<IEnumerable<Caixa>> GetAllDetalhadoAsync()
         {
             return await _context.Caixas

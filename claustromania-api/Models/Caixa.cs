@@ -14,18 +14,6 @@ namespace Claustromania.Models
         [Required]
         [Column("nome")]
         public string Nome { get; set; }
-        // Propriedade de navegação para Unidade
-        [ForeignKey("FkUnidade")]
-        public Unidade Unidade { get; set; } // Adicione esta linha
-
-        [Required]
-        [Column("fk_unidade")]
-        public Guid FkUnidade { get; set; }
-
-        // Propriedade de navegação para Funcionario
-        [ForeignKey("FkFuncionario")]
-        public Funcionario Funcionario { get; set; } 
-
 
         [Required]
         [Column("fk_funcionario")]
@@ -54,6 +42,19 @@ namespace Claustromania.Models
 
         [Column("observacoes")]
         public string? Observacoes { get; set; }
+
+        // Propriedade de navegação para Unidade
+        [ForeignKey("FkUnidade")]
+        public Unidade Unidade { get; set; } // Adicione esta linha
+
+        [Required]
+        [Column("fk_unidade")]
+        public Guid FkUnidade { get; set; }
+
+        // Propriedade de navegação para Funcionario
+        [ForeignKey("FkFuncionario")]
+        public Funcionario Funcionario { get; set; }
+
     }
 }
 

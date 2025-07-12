@@ -4,6 +4,7 @@ using Claustromania.Data;
 using Claustromania.Services;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Claustromania.Dtos;
 
 namespace Claustromania.Controllers
 {
@@ -34,6 +35,33 @@ namespace Claustromania.Controllers
             return caixa == null ? NotFound() : Ok(_mapper.Map<CaixaDto>(caixa));
         }
 
+        [HttpGet("resumido")]
+        public async Task<ActionResult<IEnumerable<CaixaResumidoDto>>> GetAllResumido()
+        {
+            var caixas = await _service.GetAllAsync();
+            var caixasResumido = _mapper.Map<List<CaixaResumidoDto>>(caixas);
+            return Ok(caixasResumido);
+        }
+        [HttpGet("resumido/{id}")]
+        public async Task<ActionResult<CaixaResumidoDto>> GetByIdResumido(Guid id)
+        {
+            var caixa = await _service.GetByIdAsync(id);
+            if (caixa == null)
+                return NotFound();
+
+            var dto = _mapper.Map<CaixaResumidoDto>(caixa);
+            return Ok(dto);
+        }
+
+        [HttpPost("resumido")]
+        public async Task<ActionResult<CaixaResumidoDto>> CreateResumido([FromBody] CaixaResumidoDto dto)
+        {
+            var caixa = _mapper.Map<Caixa>(dto);
+            var created = await _service.CreateResumidoAsync(caixa);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<CaixaResumidoDto>(created));
+        }
+
+
         [HttpPost]
         public async Task<ActionResult<CaixaDto>> Create([FromBody] CaixaDto dto)
         {
@@ -56,14 +84,6 @@ namespace Claustromania.Controllers
             var deleted = await _service.DeleteAsync(id);
             return deleted ? NoContent() : NotFound();
         }
-        [HttpGet("detalhado")]
-        public async Task<ActionResult<IEnumerable<CaixaDto>>> GetAllDetalhado()
-        {
-            var caixasComDetalhes = await _service.GetAllDetalhadoAsync();
-            var caixasDto = _mapper.Map<List<CaixaDto>>(caixasComDetalhes);
-            return Ok(caixasDto);
-        }
-
-
+        
     }
 }
