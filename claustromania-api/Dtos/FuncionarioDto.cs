@@ -9,6 +9,7 @@ namespace Claustromania.DTOs
         public string Cargo { get; set; }
         public decimal? Salario { get; set; }
         public DateTime? DataContratacao { get; set; }
+        public string? Status { get; set; }
         public string Turno { get; set; }
         public PessoaDto Pessoa { get; set; }
     }

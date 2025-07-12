@@ -31,8 +31,6 @@ namespace Claustromania.Dtos
 
         public string? Email { get; set; }
 
-        public string Senha { get; set; }
-
         public string? Status { get; set; }
         public EnderecoDto Endereco { get; set; }
 

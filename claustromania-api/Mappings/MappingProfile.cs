@@ -42,6 +42,12 @@ namespace Claustromania.Mappings
             CreateMap<Caixa, CaixaDto>()
                 .ForMember(dest => dest.Funcionario, opt => opt.MapFrom(src => src.Funcionario))
                 .ForMember(dest => dest.Unidade, opt => opt.MapFrom(src => src.Unidade));
+            CreateMap<Caixa, CaixaResumidoDto>()
+    .ForMember(dest => dest.FkFuncionario, opt => opt.MapFrom(src => src.FkFuncionario))
+    .ForMember(dest => dest.FkUnidade, opt => opt.MapFrom(src => src.FkUnidade))
+    .ReverseMap();
+            CreateMap<Caixa, CaixaResumidoDto>().ReverseMap();
+
 
             CreateMap<Jogo, JogoDto>().ReverseMap();
 
