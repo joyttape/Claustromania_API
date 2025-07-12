@@ -25,6 +25,11 @@ namespace Claustromania.Services
 
         public async Task<Funcionario> CreateAsync(Funcionario funcionario)
         {
+            if (await _context.Pessoas.AnyAsync(p => p.CPF == funcionario.Pessoa.CPF))
+            {
+                throw new Exception("CPF já cadastrado.");
+            }
+
             funcionario.Id = Guid.NewGuid();
             _context.Funcionarios.Add(funcionario);
             await _context.SaveChangesAsync();
@@ -39,6 +44,23 @@ namespace Claustromania.Services
             _context.Entry(existing).CurrentValues.SetValues(funcionario);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<Funcionario>> GetByNomeAsync(string nome)
+        {
+            return await _context.Funcionarios
+                                 .Include(f => f.Pessoa)
+                                 .ThenInclude(p => p.Endereco)
+                                 .Where(f => f.Pessoa != null && f.Pessoa.Nome.Contains(nome))
+                                 .ToListAsync();
+        }
+
+        public async Task<Funcionario?> GetByEmailAsync(string email)
+        {
+            return await _context.Funcionarios
+                                 .Include(f => f.Pessoa)
+                                 .ThenInclude(p => p.Endereco)
+                                 .FirstOrDefaultAsync(f => f.Pessoa != null && f.Pessoa.Email == email);
         }
 
         public async Task<bool> DeleteAsync(Guid id)

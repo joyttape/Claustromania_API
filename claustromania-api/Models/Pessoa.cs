@@ -20,6 +20,11 @@ namespace Claustromania.Models
         [Column("Sexo")]
         public required string? Sexo { get; set; }
 
+
+        [Column("Telefone")]
+
+        public required string? Telefone { get; set; }
+
         [Column("Email")]
         public string? Email { get; set; }
         // Chave estrangeira para Endereco (se uma pessoa tem um endereço)
@@ -29,6 +34,8 @@ namespace Claustromania.Models
         // Propriedade de navegação para Endereco
         [ForeignKey("FkEndereco")]
         public Endereco? Endereco { get; set; } 
+
+
 
         [Column("senha_hash")]
         public string? Senha { get; set; }

@@ -21,7 +21,6 @@ builder.Services.AddDbContext<ClaustromaniaDbContext>(options =>
 );
 
 // Injeção de dependência dos serviços
-builder.Services.AddScoped<PessoaService>();
 builder.Services.AddScoped<FuncionarioService>();
 builder.Services.AddScoped<EnderecoService>();
 builder.Services.AddScoped<UnidadeService>();

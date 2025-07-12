@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Claustromania.Models;
+using Claustromania.Dtos;
+using System;
 
 namespace Claustromania.DTOs
 {
@@ -11,6 +13,13 @@ namespace Claustromania.DTOs
         public string? HorarioFechamento { get; set; }
         public string Telefone { get; set; }
         public bool Ativa { get; set; }
+
+        public EnderecoDto? Endereco { get; set; }
+        public FuncionarioDto? Funcionario { get; set; }
+
+
+
+
+
     }
 }
-

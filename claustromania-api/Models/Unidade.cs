@@ -1,4 +1,5 @@
 ﻿using System;
+using Claustromania.Dtos;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -32,10 +33,17 @@ namespace Claustromania.Models
 
         [ForeignKey("FkEndereco")]
         public Endereco Endereco { get; set; }
-
         [Column("fk_endereco")]
         public Guid? FkEndereco { get; set; }
 
-        
+
+
+        [ForeignKey("FkFuncionario")]
+        public Funcionario Funcionario { get; set; }
+        [Column("fk_funcionario")]
+        public Guid? FkFuncionario
+        {
+            get; set;
+        }
     }
 }
