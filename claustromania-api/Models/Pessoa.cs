@@ -36,9 +36,5 @@ namespace Claustromania.Models
         public Endereco? Endereco { get; set; } 
 
 
-
-        [Column("senha_hash")]
-        public string? Senha { get; set; }
-
     }
 }

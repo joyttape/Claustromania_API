@@ -1,8 +1,12 @@
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
+DROP DATABASE Claustromania;
+CREATE DATABASE Claustromania;
+USE Claustromania;
 -- Host: 127.0.0.1    Database: claustromania
 -- ------------------------------------------------------
 -- Server version	8.0.34
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -147,7 +151,8 @@ CREATE TABLE `funcionario` (
   `data_contratacao` date DEFAULT NULL,
   `turno` varchar(20) DEFAULT NULL,
   `fk_pessoa` char(36) NOT NULL,
-  `status` varchar(50) DEFAULT NULL,
+  `status` boolean DEFAULT NULL,
+  `senha_hash` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_pessoa` (`fk_pessoa`),
   CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`fk_pessoa`) REFERENCES `pessoa` (`id`)
@@ -160,7 +165,24 @@ CREATE TABLE `funcionario` (
 
 LOCK TABLES `funcionario` WRITE;
 /*!40000 ALTER TABLE `funcionario` DISABLE KEYS */;
-INSERT INTO `funcionario` VALUES ('0728c020-1828-4ce5-9305-cc16e5fe88ea','Caixa',2800.00,'2023-06-15','Manhã','73c47a23-3534-4ebf-bffb-ae0bcba30a7b',NULL),('08ddc0d5-d453-4be8-8caa-2de64231e656','Caixa',2200.00,'2023-03-01','Manhã','08ddc0d5-d453-4c78-8ec2-eebe8f9a68e0',NULL),('08ddc0d6-dbd0-4036-8caa-4d7b5581149f','Caixa',2200.00,'2023-03-01','Manhã','08ddc0d6-dbd0-411c-8a2d-fe1408144443',NULL),('08ddc111-d260-4002-818a-3437b3185476','Gerente Geral',7500.00,'2023-02-15','Integral','08ddc111-d263-443d-892c-bf27e292838d',NULL),('38b8e7c2-8648-4700-b1c3-c6f48eb53f38','Atendente de Caixa',2500.00,'2024-05-10','Tarde','08ddc0c5-1720-48b4-8958-8c8115410cf8',NULL),('76385048-285c-4b5d-85e9-2e13624b16f7','Atendente',2800.00,'2025-07-11','Tarde','08ddc0bd-2bae-4c19-8808-6ae772e068a5',NULL),('9aa87fa5-7a06-4d65-a115-e27d0acf6ea2','Recepcionista',NULL,NULL,NULL,'b48f3787-bef1-455e-9605-61ec3986a359',NULL),('ab037fbc-29fa-47ad-a2b5-cdf20d559eb9','Limpeza',NULL,NULL,NULL,'67a612dc-8917-4196-9fe0-5149cef564ed',NULL),('bafe18c7-0d88-4bd0-bdc8-7a5ff13f728d','Segurança',NULL,NULL,NULL,'b6b4a6be-61ba-4575-a707-5a70df80bfda',NULL),('cc71cc61-b5fe-418e-a4cd-1e8bf5641839','Gerente',NULL,NULL,NULL,'d8d9007a-8442-41d1-968a-00a80100ba30',NULL),('d0e58598-01b9-4f95-a137-de856c63440a','Manutenção',NULL,NULL,NULL,'11f17839-cb18-43df-8b93-089dd169d3d0',NULL),('d9f73fcc-ffa0-4379-bd0b-a97bb791aabb','Recepcionista',NULL,NULL,NULL,'176704d6-0a6b-43a9-af79-28425634f63c',NULL),('dd7d907e-2e0c-4283-a5c8-9661851818a7','Gerente de Operações',5200.00,'2025-07-12','Integral','08ddc181-faba-4ced-879c-1e727b7ba115',NULL),('e750adcd-1f7b-4aa5-ac65-b070caaed431','Gerente de Unidade',5200.00,'2023-03-01','Manhã','08ddc0c0-31f2-4b50-8e4a-1b22400d2261',NULL),('e7a36ebc-c0d1-4793-b8c3-6932ea98b326','Gerente',NULL,NULL,NULL,'ea707d12-48f3-47a1-b17d-579224d5911f',NULL),('f26b5e34-b7ac-4834-acd9-6fc51c4df8b4','Gerente',NULL,NULL,NULL,'d66edf5e-8e93-47f6-8858-f38d77be6b88',NULL),('f5fef7c3-7e2c-462d-a0bd-0eeb1be1853b','Atendente',NULL,NULL,NULL,'a47b8caf-bc98-43f0-8a80-2e4aa4848b9f',NULL),('fb3905ec-6b92-4f94-8fa6-90d9794e2c0b','Atendente',NULL,NULL,NULL,'91f7b9bb-28c2-4f45-abc9-f6cb14cc5d47',NULL);
+INSERT INTO `funcionario` VALUES ('0728c020-1828-4ce5-9305-cc16e5fe88ea','Caixa',2800.00,'2023-06-15','Manhã','73c47a23-3534-4ebf-bffb-ae0bcba30a7b',NULL, NULL),
+('08ddc0d5-d453-4be8-8caa-2de64231e656','Caixa',2200.00,'2023-03-01','Manhã','08ddc0d5-d453-4c78-8ec2-eebe8f9a68e0',NULL, NULL),
+('08ddc0d6-dbd0-4036-8caa-4d7b5581149f','Caixa',2200.00,'2023-03-01','Manhã','08ddc0d6-dbd0-411c-8a2d-fe1408144443',NULL, NULL),
+('08ddc111-d260-4002-818a-3437b3185476','Gerente Geral',7500.00,'2023-02-15','Integral','08ddc111-d263-443d-892c-bf27e292838d',NULL, NULL),
+('38b8e7c2-8648-4700-b1c3-c6f48eb53f38','Atendente de Caixa',2500.00,'2024-05-10','Tarde','08ddc0c5-1720-48b4-8958-8c8115410cf8',NULL, null),
+('76385048-285c-4b5d-85e9-2e13624b16f7','Atendente',2800.00,'2025-07-11','Tarde','08ddc0bd-2bae-4c19-8808-6ae772e068a5',NULL, NULL),
+('9aa87fa5-7a06-4d65-a115-e27d0acf6ea2','Recepcionista',NULL,NULL,NULL,'b48f3787-bef1-455e-9605-61ec3986a359',NULL, NULL),
+('ab037fbc-29fa-47ad-a2b5-cdf20d559eb9','Limpeza',NULL,NULL,NULL,'67a612dc-8917-4196-9fe0-5149cef564ed',NULL, NULL),
+('bafe18c7-0d88-4bd0-bdc8-7a5ff13f728d','Segurança',NULL,NULL,NULL,'b6b4a6be-61ba-4575-a707-5a70df80bfda',NULL, NULL),
+('cc71cc61-b5fe-418e-a4cd-1e8bf5641839','Gerente',NULL,NULL,NULL,'d8d9007a-8442-41d1-968a-00a80100ba30',NULL, NULL),
+('d0e58598-01b9-4f95-a137-de856c63440a','Manutenção',NULL,NULL,NULL,'11f17839-cb18-43df-8b93-089dd169d3d0',NULL, NULL),
+('d9f73fcc-ffa0-4379-bd0b-a97bb791aabb','Recepcionista',NULL,NULL,NULL,'176704d6-0a6b-43a9-af79-28425634f63c',NULL, NULL),
+('dd7d907e-2e0c-4283-a5c8-9661851818a7','Gerente de Operações',5200.00,'2025-07-12','Integral','08ddc181-faba-4ced-879c-1e727b7ba115',NULL, NULL),
+('e750adcd-1f7b-4aa5-ac65-b070caaed431','Gerente de Unidade',5200.00,'2023-03-01','Manhã','08ddc0c0-31f2-4b50-8e4a-1b22400d2261',NULL, NULL),
+('e7a36ebc-c0d1-4793-b8c3-6932ea98b326','Gerente',NULL,NULL,NULL,'ea707d12-48f3-47a1-b17d-579224d5911f',NULL, NULL),
+('f26b5e34-b7ac-4834-acd9-6fc51c4df8b4','Gerente',NULL,NULL,NULL,'d66edf5e-8e93-47f6-8858-f38d77be6b88',NULL, NULL),
+('f5fef7c3-7e2c-462d-a0bd-0eeb1be1853b','Atendente',NULL,NULL,NULL,'a47b8caf-bc98-43f0-8a80-2e4aa4848b9f',NULL, NULL),
+('fb3905ec-6b92-4f94-8fa6-90d9794e2c0b','Atendente',NULL,NULL,NULL,'91f7b9bb-28c2-4f45-abc9-f6cb14cc5d47',NULL, NULL);
 /*!40000 ALTER TABLE `funcionario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,7 +230,6 @@ CREATE TABLE `pessoa` (
   `email` varchar(100) DEFAULT NULL,
   `telefone` varchar(20) DEFAULT NULL,
   `fk_endereco` char(36) DEFAULT NULL,
-  `senha_hash` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `cpf` (`CPF`),
   UNIQUE KEY `email` (`email`),
@@ -223,7 +244,39 @@ CREATE TABLE `pessoa` (
 
 LOCK TABLES `pessoa` WRITE;
 /*!40000 ALTER TABLE `pessoa` DISABLE KEYS */;
-INSERT INTO `pessoa` VALUES ('07ca8a69-dcd1-46b3-9bfd-7d664273d27f','Mariana Ribeiro','333.444.555-66','1999-09-01','Feminino','mariana.ribeiro@email.com',NULL,'729801e2-06ea-44f7-95a1-ecdc0cce7cd8',NULL),('08ddc002-0684-4dc9-8c2f-db7c7216bac2','Maria Silva','123.456.789-00','1990-05-20','Feminino','maria.silva@example.com',NULL,'08ddc002-0689-4cc7-86ef-c73f3adee274','senhaSegura123'),('08ddc0bd-2bae-4c19-8808-6ae772e068a5','Joana Lima','12345678900','1992-03-15','Feminino','joana.lima@email.com',NULL,'08ddc0bd-2bbc-498c-86a9-a0695703354a','senhaSegura123'),('08ddc0c0-31f2-4b50-8e4a-1b22400d2261','Mariana Oliveira','98765432100','1987-06-10','Feminino','mariana.oliveira@email.com',NULL,'08ddc0c0-31f7-4af9-8598-94f7e6074b12','SenhaForte!2023'),('08ddc0c5-1720-48b4-8958-8c8115410cf8','Lucas Martins','07111220004','1995-08-15','Masculino','lucas.betinha@email.com','(11)91234-5678','08ddc0c5-1720-49aa-8b01-0f1345545475','SenhaForte123!'),('08ddc0d5-d453-4c78-8ec2-eebe8f9a68e0','João da Silva','000.446.999-00','1990-05-15','Masculino','joao.silva@email.com','(11) 91234-5678','08ddc0d5-d453-4d24-802b-f06b822d3cae','senhaSegura123'),('08ddc0d6-dbd0-411c-8a2d-fe1408144443','João da Silva','000.116.999-00','1990-05-15','Masculino','joao.silveira@email.com','(11) 91234-5678','08ddc0d6-dbd0-41aa-87fa-c7d2951c389c','senhaSegura123'),('08ddc102-f0bb-4f33-8a07-36c4020673df','Carlos Andrade','333.116.119-11','1990-03-15','Masculino','carlos.andrade@email.com','(11) 98765-4321','08ddc102-f0bb-4e54-8ab2-08b407122dd2','SenhaSegura123'),('08ddc111-d263-443d-892c-bf27e292838d','Carlos Henrique da Silva','003.450.709-00','1985-06-10','Masculino','carlos.henrique@empresa.com','(11) 99876-5432','08ddc111-d265-4a95-83e3-448c6cdd25cb','SenhaSegura123!'),('08ddc181-faba-4ced-879c-1e727b7ba115','Ana Beatriz Silva','10305070901','1988-05-14','Feminino','ana.silva@empresa.com','(11)98765-4321','08ddc181-fabf-415d-820a-20521fc24bdc','AbSilva@2025!'),('0d84c2cc-bf36-4a95-b80d-b8bdf513e28f','Nuno Fernandes','444.555.666-77','1994-12-24','Masculino','nuno.fernandes@email.com',NULL,'cfdc4e04-1d24-468b-bf14-7c41ab8cc678',NULL),('11f17839-cb18-43df-8b93-089dd169d3d0','Hugo Pereira','88888888888','1993-02-14','Masculino','hugo.pereira@email.com',NULL,'e090ff67-5ef6-4b9f-8f31-b85e89d879d2',NULL),('176704d6-0a6b-43a9-af79-28425634f63c','Julio Santos','10000000000','1991-08-08','Masculino','julio.santos@email.com',NULL,'4e7278a8-345b-46d6-80fc-8320bc06e60d',NULL),('1ed7dc33-c86a-4898-b5e5-50f04d4d1df9','Tiago Almeida','000.111.222-33','1989-08-16','Masculino','tiago.almeida@email.com',NULL,'ebd69371-0a3f-420a-97fd-bc0df89de784',NULL),('20dbb5d9-3a72-4ace-8f00-37d496a62c19','abc','923.923.923-09','2015-04-12','Masculino','string',NULL,'d2b2d769-8b9b-4f57-a23d-b56812280670','Eudançosertanejo'),('3fa85f64-5717-4562-b3fc-2c963f66afa6','Azedo Milho','098.071.232-07','2001-07-09','Feminino','Arrombaste@gostosim.com',NULL,'3fa85f64-5717-4562-b3fc-2c963f66afa6','letsgo'),('3fe37e18-cc0c-4a2e-9991-1b13b1dd17c6','Ricardo Silva','888.999.000-11','1996-02-28','Masculino','ricardo.silva@email.com',NULL,'328d1c2c-389a-447b-9828-04e98b728227',NULL),('49b6f1a3-2834-4a36-bf5e-2ae8064541d5','Imuno Ferrandessu','672.235.146-77','1999-12-20','Masculino','imundinho.ferrados@email.com',NULL,'44325f16-b846-46c2-ac34-7e3ed0aee584','pessoa1'),('4f9473cf-2d77-4a79-b83b-1d1572bb1f21','Quiteria Rocha','777.888.999-00','1993-11-11','Feminino','quiteria.rocha@email.com',NULL,'ba4e6487-cf85-47a2-8d81-983f0d3c7890',NULL),('67a612dc-8917-4196-9fe0-5149cef564ed','Gabriela Alves','77777777777','1980-06-25','Feminino','gabriela.alves@email.com',NULL,'bc63e37e-b0ae-486c-b2e9-186b49ea9baf',NULL),('73c47a23-3534-4ebf-bffb-ae0bcba30a7b','Maria Oliveira','987.654.321-00','1992-04-10','Feminino','maria.oliveira@email.com','(11) 99876-5432','fd841f01-bab6-4f16-ac8f-5ed7228ec2da','SenhaSegura123'),('8ff5e380-3d76-4cbe-9deb-0fedb6f20c78','Karen Oliveira','111.222.333-44','1998-01-20','Feminino','karen.oliveira@email.com',NULL,'05f148c3-09eb-4487-98f3-01a6fd2f34ea',NULL),('91f7b9bb-28c2-4f45-abc9-f6cb14cc5d47','Isabela Gomes','99999999999','1987-10-01','Feminino','isabela.gomes@email.com',NULL,'ff982d01-2d08-4848-8bba-8433b76922b7',NULL),('a47b8caf-bc98-43f0-8a80-2e4aa4848b9f','Bruno Costa','22222222222','1990-07-22','Masculino','bruno.costa@email.com',NULL,'1c36c4db-b8e5-4370-b6c2-46ef1d3d7801',NULL),('a6c2a330-b330-4a3b-a8f4-5d445f55ceac','Olivia Castro','555.666.777-88','2000-03-03','Feminino','olivia.castro@email.com',NULL,'5dcf1272-71d6-429b-8c8d-b262abdb2ebc',NULL),('a7c8e304-0d56-40a2-91e3-9ea6909118c3','Lucas Martins','222.333.444-55','1996-05-15','Masculino','lucas.martins@email.com',NULL,'b60c5d55-0130-4691-b522-9de2a1f8d88a',NULL),('b48f3787-bef1-455e-9605-61ec3986a359','Daniel Lima','44444444444','1995-01-18','Masculino','daniel.lima@email.com',NULL,'ba4e6487-cf85-47a2-8d81-983f0d3c7890',NULL),('b6b4a6be-61ba-4575-a707-5a70df80bfda','Fernando Rocha','66666666666','1992-04-12','Masculino','fernando.rocha@email.com',NULL,'b60c5d55-0130-4691-b522-9de2a1f8d88a',NULL),('d66edf5e-8e93-47f6-8858-f38d77be6b88','Eliana Souza','55555555555','1988-09-30','Feminino','eliana.souza@email.com',NULL,'c11999f8-0198-4f87-8f61-b2c2ebadff3a',NULL),('d8d9007a-8442-41d1-968a-00a80100ba30','Ana Silva','11111111111','1985-03-10','Feminino','ana.silva@email.com',NULL,'d8d9007a-8442-41d1-968a-00a80100ba30',NULL),('e1c2fc54-f199-42ca-a88c-7d656a53cd47','Sofia Mendes','999.000.111-22','1990-04-04','Feminino','sofia.mendes@email.com',NULL,'db9912a9-561f-4f0e-839d-012a252a302f','pessoa1'),('ea707d12-48f3-47a1-b17d-579224d5911f','Carla Dias','33333333333','1982-11-05','Feminino','carla.dias@email.com',NULL,'729801e2-06ea-44f7-95a1-ecdc0cce7cd8',NULL),('f1e24097-f69b-49ab-9b63-077315fd9d1f','Pedro Goncalves','666.777.888-99','1997-07-07','Masculino','pedro.goncalves@email.com',NULL,'b60c5d55-0130-4691-b522-9de2a1f8d88a',NULL);
+INSERT INTO `pessoa` VALUES ('07ca8a69-dcd1-46b3-9bfd-7d664273d27f','Mariana Ribeiro','333.444.555-66','1999-09-01','Feminino','mariana.ribeiro@email.com',NULL,'729801e2-06ea-44f7-95a1-ecdc0cce7cd8'),
+('08ddc002-0684-4dc9-8c2f-db7c7216bac2','Maria Silva','123.456.789-00','1990-05-20','Feminino','maria.silva@example.com',NULL,'08ddc002-0689-4cc7-86ef-c73f3adee274'),
+('08ddc0bd-2bae-4c19-8808-6ae772e068a5','Joana Lima','12345678900','1992-03-15','Feminino','joana.lima@email.com',NULL,'08ddc0bd-2bbc-498c-86a9-a0695703354a'),
+('08ddc0c0-31f2-4b50-8e4a-1b22400d2261','Mariana Oliveira','98765432100','1987-06-10','Feminino','mariana.oliveira@email.com',NULL,'08ddc0c0-31f7-4af9-8598-94f7e6074b12'),
+('08ddc0c5-1720-48b4-8958-8c8115410cf8','Lucas Martins','07111220004','1995-08-15','Masculino','lucas.betinha@email.com','(11)91234-5678','08ddc0c5-1720-49aa-8b01-0f1345545475'),
+('08ddc0d5-d453-4c78-8ec2-eebe8f9a68e0','João da Silva','000.446.999-00','1990-05-15','Masculino','joao.silva@email.com','(11) 91234-5678','08ddc0d5-d453-4d24-802b-f06b822d3cae'),
+('08ddc0d6-dbd0-411c-8a2d-fe1408144443','João da Silva','000.116.999-00','1990-05-15','Masculino','joao.silveira@email.com','(11) 91234-5678','08ddc0d6-dbd0-41aa-87fa-c7d2951c389c'),
+('08ddc102-f0bb-4f33-8a07-36c4020673df','Carlos Andrade','333.116.119-11','1990-03-15','Masculino','carlos.andrade@email.com','(11) 98765-4321','08ddc102-f0bb-4e54-8ab2-08b407122dd2'),
+('08ddc111-d263-443d-892c-bf27e292838d','Carlos Henrique da Silva','003.450.709-00','1985-06-10','Masculino','carlos.henrique@empresa.com','(11) 99876-5432','08ddc111-d265-4a95-83e3-448c6cdd25cb'),
+('08ddc181-faba-4ced-879c-1e727b7ba115','Ana Beatriz Silva','10305070901','1988-05-14','Feminino','ana.silva@empresa.com','(11)98765-4321','08ddc181-fabf-415d-820a-20521fc24bdc'),
+('0d84c2cc-bf36-4a95-b80d-b8bdf513e28f','Nuno Fernandes','444.555.666-77','1994-12-24','Masculino','nuno.fernandes@email.com',NULL,'cfdc4e04-1d24-468b-bf14-7c41ab8cc678'),
+('11f17839-cb18-43df-8b93-089dd169d3d0','Hugo Pereira','88888888888','1993-02-14','Masculino','hugo.pereira@email.com',NULL,'e090ff67-5ef6-4b9f-8f31-b85e89d879d2'),
+('176704d6-0a6b-43a9-af79-28425634f63c','Julio Santos','10000000000','1991-08-08','Masculino','julio.santos@email.com',NULL,'4e7278a8-345b-46d6-80fc-8320bc06e60d'),
+('1ed7dc33-c86a-4898-b5e5-50f04d4d1df9','Tiago Almeida','000.111.222-33','1989-08-16','Masculino','tiago.almeida@email.com',NULL,'ebd69371-0a3f-420a-97fd-bc0df89de784'),
+('20dbb5d9-3a72-4ace-8f00-37d496a62c19','abc','923.923.923-09','2015-04-12','Masculino','string',NULL,'d2b2d769-8b9b-4f57-a23d-b56812280670'),(
+'3fa85f64-5717-4562-b3fc-2c963f66afa6','Azedo Milho','098.071.232-07','2001-07-09','Feminino','Arrombaste@gostosim.com',NULL,'3fa85f64-5717-4562-b3fc-2c963f66afa6'),
+('3fe37e18-cc0c-4a2e-9991-1b13b1dd17c6','Ricardo Silva','888.999.000-11','1996-02-28','Masculino','ricardo.silva@email.com',NULL,'328d1c2c-389a-447b-9828-04e98b728227'),
+('49b6f1a3-2834-4a36-bf5e-2ae8064541d5','Imuno Ferrandessu','672.235.146-77','1999-12-20','Masculino','imundinho.ferrados@email.com',NULL,'44325f16-b846-46c2-ac34-7e3ed0aee584'),
+('4f9473cf-2d77-4a79-b83b-1d1572bb1f21','Quiteria Rocha','777.888.999-00','1993-11-11','Feminino','quiteria.rocha@email.com',NULL,'ba4e6487-cf85-47a2-8d81-983f0d3c7890'),
+('67a612dc-8917-4196-9fe0-5149cef564ed','Gabriela Alves','77777777777','1980-06-25','Feminino','gabriela.alves@email.com',NULL,'bc63e37e-b0ae-486c-b2e9-186b49ea9baf'),
+('73c47a23-3534-4ebf-bffb-ae0bcba30a7b','Maria Oliveira','987.654.321-00','1992-04-10','Feminino','maria.oliveira@email.com','(11) 99876-5432','fd841f01-bab6-4f16-ac8f-5ed7228ec2da'),
+('8ff5e380-3d76-4cbe-9deb-0fedb6f20c78','Karen Oliveira','111.222.333-44','1998-01-20','Feminino','karen.oliveira@email.com',NULL,'05f148c3-09eb-4487-98f3-01a6fd2f34ea'),
+('91f7b9bb-28c2-4f45-abc9-f6cb14cc5d47','Isabela Gomes','99999999999','1987-10-01','Feminino','isabela.gomes@email.com',NULL,'ff982d01-2d08-4848-8bba-8433b76922b7'),
+('a47b8caf-bc98-43f0-8a80-2e4aa4848b9f','Bruno Costa','22222222222','1990-07-22','Masculino','bruno.costa@email.com',NULL,'1c36c4db-b8e5-4370-b6c2-46ef1d3d7801'),
+('a6c2a330-b330-4a3b-a8f4-5d445f55ceac','Olivia Castro','555.666.777-88','2000-03-03','Feminino','olivia.castro@email.com',NULL,'5dcf1272-71d6-429b-8c8d-b262abdb2ebc'),
+('a7c8e304-0d56-40a2-91e3-9ea6909118c3','Lucas Martins','222.333.444-55','1996-05-15','Masculino','lucas.martins@email.com',NULL,'b60c5d55-0130-4691-b522-9de2a1f8d88a'),
+('b48f3787-bef1-455e-9605-61ec3986a359','Daniel Lima','44444444444','1995-01-18','Masculino','daniel.lima@email.com',NULL,'ba4e6487-cf85-47a2-8d81-983f0d3c7890'),
+('b6b4a6be-61ba-4575-a707-5a70df80bfda','Fernando Rocha','66666666666','1992-04-12','Masculino','fernando.rocha@email.com',NULL,'b60c5d55-0130-4691-b522-9de2a1f8d88a'),
+('d66edf5e-8e93-47f6-8858-f38d77be6b88','Eliana Souza','55555555555','1988-09-30','Feminino','eliana.souza@email.com',NULL,'c11999f8-0198-4f87-8f61-b2c2ebadff3a'),
+('d8d9007a-8442-41d1-968a-00a80100ba30','Ana Silva','11111111111','1985-03-10','Feminino','ana.silva@email.com',NULL,'d8d9007a-8442-41d1-968a-00a80100ba30'),
+('e1c2fc54-f199-42ca-a88c-7d656a53cd47','Sofia Mendes','999.000.111-22','1990-04-04','Feminino','sofia.mendes@email.com',NULL,'db9912a9-561f-4f0e-839d-012a252a302f'),
+('ea707d12-48f3-47a1-b17d-579224d5911f','Carla Dias','33333333333','1982-11-05','Feminino','carla.dias@email.com',NULL,'729801e2-06ea-44f7-95a1-ecdc0cce7cd8'),
+('f1e24097-f69b-49ab-9b63-077315fd9d1f','Pedro Goncalves','666.777.888-99','1997-07-07','Masculino','pedro.goncalves@email.com',NULL,'b60c5d55-0130-4691-b522-9de2a1f8d88a');
 /*!40000 ALTER TABLE `pessoa` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,15 +289,25 @@ DROP TABLE IF EXISTS `reserva`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `reserva` (
   `id` char(36) NOT NULL,
-  `data_reserva` datetime NOT NULL,
+  `data_reserva` date NOT NULL,
+  `hora_reserva` time NOT NULL,
+  `numero_jogadores` int NOT NULL DEFAULT 1,
   `valor_total` decimal(10,2) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'reservado',
+  `observacoes` text,
+  `forma_pagamento` varchar(20) NOT NULL,
+  `data_criacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fk_cliente` char(36) NOT NULL,
   `fk_sala_jogo` char(36) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_cliente` (`fk_cliente`),
   KEY `fk_sala_jogo` (`fk_sala_jogo`),
+  KEY `idx_data_hora` (`data_reserva`, `hora_reserva`),
   CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`fk_cliente`) REFERENCES `cliente` (`id`),
-  CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`fk_sala_jogo`) REFERENCES `sala_jogo` (`id`)
+  CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`fk_sala_jogo`) REFERENCES `sala_jogo` (`id`),
+  CONSTRAINT `chk_status` CHECK (`status` IN ('reservado', 'confirmado', 'cancelado', 'concluido')),
+  CONSTRAINT `chk_forma_pagamento` CHECK (`forma_pagamento` IN ('pix', 'dinheiro', 'cartao')),
+  CONSTRAINT `chk_numero_jogadores` CHECK (`numero_jogadores` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -254,7 +317,6 @@ CREATE TABLE `reserva` (
 
 LOCK TABLES `reserva` WRITE;
 /*!40000 ALTER TABLE `reserva` DISABLE KEYS */;
-INSERT INTO `reserva` VALUES ('0620b715-0eba-4cf2-b66f-0e0c764fdc55','2024-07-12 09:00:00',90.00,'d6b05066-19f6-412d-9b84-a3813aacb413','5057883e-a784-417d-b3b9-d69c7e3caec4'),('3dda60bd-1cf3-4cf7-8767-8d707edbaa6c','2024-07-13 10:00:00',210.00,'75225a5c-2e61-454f-82cd-926def203e00','0b87ceee-9bd8-435d-9632-e4083f4833f8'),('4126bf2f-facb-4f69-9716-a96649ce844c','2024-07-11 16:00:00',200.00,'ed59f436-c8ca-486a-8f8a-d10e87c0eff3','8fc5f2ef-e485-4a4a-96a6-46c4294f9273'),('48cbd7f7-ed7c-4f22-979d-4b503dc451e5','2024-07-14 11:00:00',170.00,'44d91ed6-26b8-408d-9c5b-e662722562dd','64e845a7-ee65-4dff-aa76-cb91c246e83e'),('5a4c38be-105d-404f-9fa2-e3d70b05d009','2024-07-10 14:00:00',180.00,'dbf10332-2c2f-4cee-ab01-79637bdfd4aa','45ef8415-c45d-4935-9291-6b7dc13add7b'),('723cd0f8-56a7-4789-9fc3-e6fe268d4c4c','2024-07-13 15:00:00',250.00,'31ded6ab-9cd4-4d60-872d-44b9b02baa1e','7137a2db-4112-48db-a3fe-db78a90a922e'),('951eb1de-e387-480e-a7f8-20787a84bd55','2024-07-14 14:00:00',130.00,'030b94b3-355b-4599-8385-dac54a7b21a3','7869772f-4dd0-4b04-80bc-30cd0bc1a6bd'),('be414661-e4d8-48bf-a453-8ae87ba5ab72','2024-07-10 10:00:00',150.00,'8f4f1063-8568-4188-ae3e-ab7098a6585a','7db7cb96-37b2-48b2-bd47-398b6d88216e'),('c570cafa-8129-4015-a207-9835c966eded','2024-07-11 11:00:00',100.00,'f2596d40-6a31-4e80-9cff-0217db5bd029','a20c8118-8661-4a2e-98de-40a3c17ea25f'),('c90ab3c2-0f0e-4fe7-9b6e-a05e2a34282a','2024-07-12 13:00:00',175.00,'148f49bd-508c-4aca-a504-66f065d88fb0','51241b56-aafb-45ce-94ef-bae1ff7762e8');
 /*!40000 ALTER TABLE `reserva` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -326,18 +388,23 @@ DROP TABLE IF EXISTS `transacao`;
 CREATE TABLE `transacao` (
   `id` char(36) NOT NULL,
   `valor` decimal(10,2) NOT NULL,
-  `data_hora` datetime NOT NULL,
+  `data` datetime NOT NULL,
   `tipo` varchar(50) NOT NULL,
-  `fk_pessoa` char(36) DEFAULT NULL,
-  `fk_caixa` char(36) DEFAULT NULL,
+  `fk_pessoa` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `fk_caixa` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `fk_reserva` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `forma_pagamento` varchar(50) DEFAULT NULL,
+  `pagador` varchar(100) DEFAULT NULL,
+  `valor_recebido` decimal(10,2) DEFAULT NULL,
+  `troco` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_pessoa` (`fk_pessoa`),
   KEY `fk_caixa` (`fk_caixa`),
+  KEY `fk_reserva` (`fk_reserva`),
   CONSTRAINT `transacao_ibfk_1` FOREIGN KEY (`fk_pessoa`) REFERENCES `pessoa` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `transacao_ibfk_2` FOREIGN KEY (`fk_caixa`) REFERENCES `caixa` (`id`)
+  CONSTRAINT `transacao_ibfk_2` FOREIGN KEY (`fk_caixa`) REFERENCES `caixa` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `transacao_ibfk_3` FOREIGN KEY (`fk_reserva`) REFERENCES `reserva` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `transacao`
@@ -345,13 +412,14 @@ CREATE TABLE `transacao` (
 
 LOCK TABLES `transacao` WRITE;
 /*!40000 ALTER TABLE `transacao` DISABLE KEYS */;
-INSERT INTO `transacao` VALUES ('04218088-24f0-460e-a8c6-ec9c56ed09f8',75.00,'2024-07-02 09:45:00','Saida','0d84c2cc-bf36-4a95-b80d-b8bdf513e28f','ab75c695-5079-48db-865e-b2095f9fbdf7',NULL),('108d51b4-73cb-40ac-b3a3-4b33519b4aa7',250.00,'2024-07-04 16:00:00','Entrada','e1c2fc54-f199-42ca-a88c-7d656a53cd47','95a4817b-7332-4936-8e64-e4fa3a84e190',NULL),('1243032d-1137-47fb-b132-892346a8ed0e',995.00,'2025-07-02 09:45:00','Entrada','0d84c2cc-bf36-4a95-b80d-b8bdf513e28f','ab75c695-5079-48db-865e-b2095f9fbdf7','Débito'),('15aed839-a1d6-47e1-ba93-7096dc59e494',90.00,'2024-07-04 10:45:00','Saida','3fe37e18-cc0c-4a2e-9991-1b13b1dd17c6','475e811a-b988-45cc-a6b8-72b8b877d8a5',NULL),('588aa7df-6015-4e0d-87af-68e4e5ba76a5',50.00,'2024-07-01 10:30:00','Saida','a7c8e304-0d56-40a2-91e3-9ea6909118c3','592c0681-1d96-492e-bf7f-a31ac396b76a',NULL),('6b8b14a0-fb58-4e20-adf5-0e1f364bb272',180.00,'2024-07-03 11:00:00','Entrada','4f9473cf-2d77-4a79-b83b-1d1572bb1f21','0f12d74e-69a1-4d40-a157-2b0af09af20e',NULL),('7b943d52-8634-4144-84e8-ede18c4be725',300.00,'2024-07-02 15:00:00','Entrada','a6c2a330-b330-4a3b-a8f4-5d445f55ceac','820a55e2-256c-4c65-8c43-07eadeb9c649',NULL),('9f76d6cb-608f-487d-a368-5c9412a80d6f',60.00,'2024-07-05 09:15:00','Saida','1ed7dc33-c86a-4898-b5e5-50f04d4d1df9','d068bef9-adbb-49b2-a548-e16bed5c07c7',NULL),('b66da4bd-c3c2-402c-8635-a623b3a75280',120.00,'2024-07-03 08:30:00','Saida','f1e24097-f69b-49ab-9b63-077315fd9d1f','82a7f146-562e-431a-91bc-1ce1d017b828',NULL),('c9cb8381-c06b-47c6-86a0-f1b1a0b9a59f',200.00,'2024-07-01 14:00:00','Entrada','07ca8a69-dcd1-46b3-9bfd-7d664273d27f','d57793cc-63cf-4d5c-a82f-c23d88a10d08',NULL),('e0704893-2b6c-409e-b717-268672e32cf8',150.00,'2024-07-01 10:15:00','Entrada','8ff5e380-3d76-4cbe-9deb-0fedb6f20c78','592c0681-1d96-492e-bf7f-a31ac396b76a',NULL);
 /*!40000 ALTER TABLE `transacao` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Table structure for table `unidade`
 --
+
+DESCRIBE transacao;
 
 DROP TABLE IF EXISTS `unidade`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -363,6 +431,8 @@ CREATE TABLE `unidade` (
   `horario_abertura` time DEFAULT NULL,
   `horario_fechamento` time DEFAULT NULL,
   `telefone` varchar(255) DEFAULT NULL,
+  `cnpj` varchar(20) NOT NULL,
+  `diafunci` varchar(255) NOT NULL,
   `ativa` tinyint(1) DEFAULT '1',
   `fk_endereco` char(36) DEFAULT NULL,
   `fk_funcionario` char(36) DEFAULT NULL,
@@ -380,7 +450,28 @@ CREATE TABLE `unidade` (
 
 LOCK TABLES `unidade` WRITE;
 /*!40000 ALTER TABLE `unidade` DISABLE KEYS */;
-INSERT INTO `unidade` VALUES ('07094ae7-b3cd-4620-a678-aa2d014e3094','Unidade Leste',60,'08:00:00','21:00:00','(31)92345-6789',1,'37cefc53-1898-4603-87ca-944a1f8e1461','f26b5e34-b7ac-4834-acd9-6fc51c4df8b4'),('08ddc0d5-d453-4d95-8951-f39a1c03ece5','Unidade Centro',100,'08:00:00','18:00:00','(11) 1234-5678',1,NULL,NULL),('08ddc0d6-dbd0-4238-8162-085fe8377e60','Unidade Centro',100,'08:00:00','18:00:00','(11) 1234-5678',1,NULL,NULL),('1e4c837b-14cf-4d8f-bc80-21841127b4a4','Unidade Central',150,'08:00:00','20:00:00','(11) 3456-7890',1,NULL,NULL),('22df9c32-0b24-4595-9508-0f317b528a50','Unidade Nova',50,'10:00:00','23:00:00','(81)97890-1234',1,'43ae5fb1-5544-4c9e-9f27-d379c2e36735','e7a36ebc-c0d1-4793-b8c3-6932ea98b326'),('39f7f961-3049-4edf-ad96-93cc1568ffd6','Unidade Oeste',35,'09:30:00','22:30:00','(41)93456-7890',1,'cf3815b7-8727-45c7-b2a7-962a7f21ad21','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),('4763072e-f310-48de-b885-0d5a4531ea6a','Unidade Principal',120,'09:00:00','22:00:00','(11) 98765-4321',1,'3364bf8a-274f-46b3-b7de-44d351194434',NULL),('62ba97ef-ee2f-409f-a809-7a6d128132ad','Unidade Liberdade',100,'08:00:00','18:00:00','(11) 3322-9988',1,'08ddc102-f0bb-4e54-8ab2-08b407122dd2',NULL),('76ae53fc-2d4a-42ac-9c40-630dd7495ef0','Unidade Centro',50,'09:00:00','22:00:00','(11)98765-4321',1,'8d32289a-293c-4476-94e7-543e1ba4e847','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),('802b5a95-3481-4cea-9c63-8e30d24a405e','Unidade Central',30,'09:00:00','22:00:00','(85)96789-0123',1,'790e6332-5ee7-4395-aa2e-f83047f26c2d','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),('81f94d29-cd3b-4276-bbf3-b5584ce29c86','Unidade Central',50,'08:30:00','19:00:00','(11) 91234-5678',0,NULL,NULL),('914c81ad-3e51-4b78-a9f2-8eb90eec8844','Unidade Moema',85,'10:00:00','20:00:00','(11) 3555-1122',1,NULL,NULL),('96306959-ff52-486f-8cb8-83881244421d','Unidade Paulista',120,'08:00:00','22:00:00','(11) 3222-4455',1,NULL,NULL),('98cb7c77-b74e-4d09-8e70-64f1fabd70eb','Unidade Centro',80,'08:00:00','22:00:00','(11) 2345-6789',1,'67fa379d-90b8-498e-9d01-76c23ca7b39e','08ddc111-d260-4002-818a-3437b3185476'),('9f1d74a8-69cb-483b-a5f6-646c9e6c832d','Unidade Principal',60,'09:30:00','22:30:00','(92)99012-3456',1,'97ca4370-9aeb-4ba6-af67-7e9bfee7f182','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),('add79077-5527-40a4-81c5-14db67e84859','Unidade Sul',55,'08:30:00','21:30:00','(71)95678-9012',1,'1206851e-394f-4dc1-ada5-97ef8943c30e','f26b5e34-b7ac-4834-acd9-6fc51c4df8b4'),('c66d47fa-9384-4e85-823f-488cfe1367a5','Unidade Norte',45,'10:30:00','23:30:00','(51)94567-8901',1,'72e85a1b-8404-4354-9ade-b3d74439fb58','e7a36ebc-c0d1-4793-b8c3-6932ea98b326'),('ce46e340-b144-4942-b9a7-b2b80a18bdc8','Unidade Zona Sul',40,'10:00:00','23:00:00','(21)91234-5678',1,'aae85497-ce90-4a5e-ab99-174c246cdc07','e7a36ebc-c0d1-4793-b8c3-6932ea98b326'),('db584d96-76f9-4dad-9b59-316c47da6cf7','Unidade Antiga',40,'08:00:00','21:00:00','(61)98901-2345',1,'2d767e42-8281-4197-91af-27c5ad5a94ce',NULL);
+INSERT INTO `unidade` VALUES 
+('07094ae7-b3cd-4620-a678-aa2d014e3094','Unidade Leste',60,'08:00:00','21:00:00','(31)92345-6789','33.014.556/0001-96','Segunda a Sábado',1,'37cefc53-1898-4603-87ca-944a1f8e1461','f26b5e34-b7ac-4834-acd9-6fc51c4df8b4'),
+('08ddc0d5-d453-4d95-8951-f39a1c03ece5','Unidade Centro',100,'08:00:00','18:00:00','(11) 1234-5678','09.546.984/0001-25','Segunda a Sexta',1,NULL,NULL),
+('08ddc0d6-dbd0-4238-8162-085fe8377e60','Unidade Centro',100,'08:00:00','18:00:00','(11) 1234-5678','71.223.406/0001-80','Segunda a Sexta',1,NULL,NULL),
+('1e4c837b-14cf-4d8f-bc80-21841127b4a4','Unidade Central',150,'08:00:00','20:00:00','(11) 3456-7890','88.947.248/0001-84','Segunda a Domingo',1,NULL,NULL),
+('22df9c32-0b24-4595-9508-0f317b528a50','Unidade Nova',50,'10:00:00','23:00:00','(81)97890-1234','45.678.123/0001-90','Terça a Domingo',1,'43ae5fb1-5544-4c9e-9f27-d379c2e36735','e7a36ebc-c0d1-4793-b8c3-6932ea98b326'),
+('39f7f961-3049-4edf-ad96-93cc1568ffd6','Unidade Oeste',35,'09:30:00','22:30:00','(41)93456-7890','12.345.678/0001-91','Segunda a Sábado',1,'cf3815b7-8727-45c7-b2a7-962a7f21ad21','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),
+('4763072e-f310-48de-b885-0d5a4531ea6a','Unidade Principal',120,'09:00:00','22:00:00','(11) 98765-4321','23.456.789/0001-92','Todos os dias',1,'3364bf8a-274f-46b3-b7de-44d351194434',NULL),
+('62ba97ef-ee2f-409f-a809-7a6d128132ad','Unidade Liberdade',100,'08:00:00','18:00:00','(11) 3322-9988','34.567.891/0001-93','Segunda a Sexta',1,'08ddc102-f0bb-4e54-8ab2-08b407122dd2',NULL),
+('76ae53fc-2d4a-42ac-9c40-630dd7495ef0','Unidade Centro',50,'09:00:00','22:00:00','(11)98765-4321','45.678.912/0001-94','Segunda a Domingo',1,'8d32289a-293c-4476-94e7-543e1ba4e847','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),
+('802b5a95-3481-4cea-9c63-8e30d24a405e','Unidade Central',30,'09:00:00','22:00:00','(85)96789-0123','56.789.123/0001-95','Quarta a Domingo',1,'790e6332-5ee7-4395-aa2e-f83047f26c2d','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),
+('81f94d29-cd3b-4276-bbf3-b5584ce29c86','Unidade Central',50,'08:30:00','19:00:00','(11) 91234-5678','67.891.234/0001-96','Segunda a Sexta',0,NULL,NULL),
+('914c81ad-3e51-4b78-a9f2-8eb90eec8844','Unidade Moema',85,'10:00:00','20:00:00','(11) 3555-1122','78.912.345/0001-97','Segunda a Sábado',1,NULL,NULL),
+('96306959-ff52-486f-8cb8-83881244421d','Unidade Paulista',120,'08:00:00','22:00:00','(11) 3222-4455','89.123.456/0001-98','Todos os dias',1,NULL,NULL),
+('98cb7c77-b74e-4d09-8e70-64f1fabd70eb','Unidade Centro',80,'08:00:00','22:00:00','(11) 2345-6789','91.234.567/0001-99','Segunda a Domingo',1,'67fa379d-90b8-498e-9d01-76c23ca7b39e','08ddc111-d260-4002-818a-3437b3185476'),
+('9f1d74a8-69cb-483b-a5f6-646c9e6c832d','Unidade Principal',60,'09:30:00','22:30:00','(92)99012-3456','12.345.679/0001-00','Terça a Domingo',1,'97ca4370-9aeb-4ba6-af67-7e9bfee7f182','cc71cc61-b5fe-418e-a4cd-1e8bf5641839'),
+('add79077-5527-40a4-81c5-14db67e84859','Unidade Sul',55,'08:30:00','21:30:00','(71)95678-9012','23.456.781/0001-01','Segunda a Sábado',1,'1206851e-394f-4dc1-ada5-97ef8943c30e','f26b5e34-b7ac-4834-acd9-6fc51c4df8b4'),
+('c66d47fa-9384-4e85-823f-488cfe1367a5','Unidade Norte',45,'10:30:00','23:30:00','(51)94567-8901','34.567.892/0001-02','Quinta a Domingo',1,'72e85a1b-8404-4354-9ade-b3d74439fb58','e7a36ebc-c0d1-4793-b8c3-6932ea98b326'),
+('ce46e340-b144-4942-b9a7-b2b80a18bdc8','Unidade Zona Sul',40,'10:00:00','23:00:00','(21)91234-5678','45.678.913/0001-03','Sexta a Domingo',1,'aae85497-ce90-4a5e-ab99-174c246cdc07','e7a36ebc-c0d1-4793-b8c3-6932ea98b326'),
+('db584d96-76f9-4dad-9b59-316c47da6cf7','Unidade Antiga',40,'08:00:00','21:00:00','(61)98901-2345','56.789.124/0001-04','Segunda a Sexta',1,'2d767e42-8281-4197-91af-27c5ad5a94ce',NULL);
+/*!40000 ALTER TABLE `unidade` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40000 ALTER TABLE `unidade` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

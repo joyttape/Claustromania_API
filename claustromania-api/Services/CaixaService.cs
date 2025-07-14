@@ -203,6 +203,40 @@ namespace Claustromania.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> UpdateResumidoAsync(Caixa caixa)
+        {
+            var existingCaixa = await _context.Caixas.FindAsync(caixa.Id);
+            if (existingCaixa == null)
+                return false;
+
+            // Atualiza apenas os campos relevantes para a versão resumida
+            existingCaixa.Nome = caixa.Nome;
+            existingCaixa.DataHoraAbertura = caixa.DataHoraAbertura;
+            existingCaixa.DataHoraFechamento = caixa.DataHoraFechamento;
+            existingCaixa.ValorInicial = caixa.ValorInicial;
+            existingCaixa.ValorFinal = caixa.ValorFinal;
+            existingCaixa.Status = caixa.Status;
+            existingCaixa.Observacoes = caixa.Observacoes;
+            existingCaixa.FkFuncionario = caixa.FkFuncionario;
+            existingCaixa.FkUnidade = caixa.FkUnidade;
+            existingCaixa.TotalTransacoes = caixa.TotalTransacoes;
+
+            _context.Caixas.Update(existingCaixa);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteResumidoAsync(Guid id)
+        {
+            var caixa = await _context.Caixas.FindAsync(id);
+            if (caixa == null)
+                return false;
+
+            _context.Caixas.Remove(caixa);
+            await _context.SaveChangesAsync();
+            return true;
+        }
         public async Task<Caixa> CreateResumidoAsync(Caixa caixa)
         {
             caixa.Id = Guid.NewGuid();

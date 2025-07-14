@@ -34,16 +34,25 @@ namespace Claustromania.Data
                 .HasConversion<string>();
 
             modelBuilder.Entity<Transacao>()
-    .HasOne<Pessoa>() // se quiser acessar Pessoa diretamente, adicione a navigation no model também
-    .WithMany()
-    .HasForeignKey(t => t.FkPessoa)
-    .OnDelete(DeleteBehavior.SetNull);
-
+                 .HasOne(t => t.Caixa)
+                 .WithMany()
+                 .HasForeignKey(t => t.FkCaixa)
+                 .HasConstraintName("fk_transacao_caixa");
 
             modelBuilder.Entity<Transacao>()
-    .HasOne<Caixa>()
-    .WithMany()
-    .HasForeignKey(t => t.FkCaixa);
+                .HasOne(t => t.Reserva)
+                .WithMany()
+                .HasForeignKey(t => t.FkReserva)
+                .HasConstraintName("fk_transacao_reserva")
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Transacao>()
+                .HasOne(t => t.Pessoa)
+                .WithMany()
+                .HasForeignKey(t => t.FkPessoa)
+                .HasConstraintName("fk_transacao_pessoa")
+                .OnDelete(DeleteBehavior.SetNull);
+
 
 
             modelBuilder.Entity<Cliente>()

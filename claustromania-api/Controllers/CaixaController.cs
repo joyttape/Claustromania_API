@@ -70,6 +70,25 @@ namespace Claustromania.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<CaixaDto>(created));
         }
 
+        [HttpPut("resumido/{id}")]
+        public async Task<IActionResult> UpdateResumido(Guid id, [FromBody] CaixaResumidoDto dto)
+        {
+            if (id != dto.Id)
+                return BadRequest("ID na URL não corresponde ao ID do corpo da requisição");
+
+            var caixa = _mapper.Map<Caixa>(dto);
+            var updated = await _service.UpdateResumidoAsync(caixa);
+
+            return updated ? NoContent() : NotFound();
+        }
+
+        [HttpDelete("resumido/{id}")]
+        public async Task<IActionResult> DeleteResumido(Guid id)
+        {
+            var deleted = await _service.DeleteResumidoAsync(id);
+            return deleted ? NoContent() : NotFound();
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] CaixaDto dto)
         {

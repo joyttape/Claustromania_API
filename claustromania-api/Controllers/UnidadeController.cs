@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Claustromania.Dtos;
 using Claustromania.DTOs;
 using Claustromania.Models;
+using Claustromania.Data;
 using Claustromania.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -10,11 +13,13 @@ public class UnidadeController : ControllerBase
 {
     private readonly UnidadeService _service;
     private readonly IMapper _mapper;
-
-    public UnidadeController(UnidadeService service, IMapper mapper)
+    private readonly ClaustromaniaDbContext _context;
+    
+    public UnidadeController(UnidadeService service, IMapper mapper, ClaustromaniaDbContext context)
     {
         _service = service;
         _mapper = mapper;
+        _context = context;
     }
 
     [HttpGet]
@@ -32,20 +37,24 @@ public class UnidadeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<UnidadeDto>> Create([FromBody] UnidadeDto dto)
+    public async Task<ActionResult<UnidadeDto>> Create([FromBody] UnidadeCreateDto dto)
     {
-        var unidade = _mapper.Map<Unidade>(dto);
-        var criada = await _service.CreateAsync(unidade);
+        var criada = await _service.CreateWithEnderecoAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = criada.Id }, _mapper.Map<UnidadeDto>(criada));
     }
 
+
+
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UnidadeDto dto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UnidadeCreateDto dto)
     {
-        if (id != dto.Id) return BadRequest();
-        var atualizado = await _service.UpdateAsync(_mapper.Map<Unidade>(dto));
+        var entidade = _mapper.Map<Unidade>(dto);
+        entidade.Id = id;
+
+        var atualizado = await _service.UpdateAsync(entidade);
         return atualizado ? NoContent() : NotFound();
     }
+
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)

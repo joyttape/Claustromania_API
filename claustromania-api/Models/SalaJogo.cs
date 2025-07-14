@@ -18,5 +18,11 @@ namespace Claustromania.Models
         [Required]
         [Column("fk_jogo")]
         public Guid FkJogo { get; set; }
+
+        [ForeignKey("FkSala")]
+        public Sala Sala { get; set; }
+
+        [ForeignKey("FkJogo")]
+        public Jogo Jogo { get; set; }
     }
 }

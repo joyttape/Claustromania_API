@@ -1,17 +1,13 @@
-﻿using Claustromania.Dtos;
-using System;
-
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Claustromania.DTOs
 {
-    public class ReservaDto
+    public class CreateReservaDto
     {
-        public Guid Id { get; set; }
         public DateTime DataReserva { get; set; }
         public TimeSpan HoraReserva { get; set; }
         public int NumeroJogadores { get; set; }
         public decimal ValorTotal { get; set; }
-        public string Status { get; set; } = "reservado";
         public string? Observacoes { get; set; }
         public string FormaPagamento { get; set; }
         public Guid FkCliente { get; set; }

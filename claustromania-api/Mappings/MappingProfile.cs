@@ -18,6 +18,10 @@ namespace Claustromania.Mappings
                 .ForMember(dest => dest.Pessoa, opt => opt.MapFrom(src => src.Pessoa))
                 .ReverseMap();
 
+            CreateMap<FuncionarioDto, Funcionario>()
+              .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+
+
             CreateMap<Endereco, EnderecoDto>().ReverseMap();
 
             CreateMap<Unidade, UnidadeDto>()
@@ -36,17 +40,17 @@ namespace Claustromania.Mappings
     .ForMember(dest => dest.Unidade, opt => opt.MapFrom(src => src.Unidade))
     .ForMember(dest => dest.DataHoraAbertura, opt => opt.MapFrom(src => src.DataHoraAbertura))
     .ForMember(dest => dest.DataHoraFechamento, opt => opt.MapFrom(src => src.DataHoraFechamento))
-    .ForMember(dest => dest.FkFuncionario, opt => opt.Ignore()) // ou calcule do dto.Funcionario.Id se quiser
-    .ForMember(dest => dest.FkUnidade, opt => opt.Ignore());   // ou calcule do dto.Unidade.Id se quiser
+    .ForMember(dest => dest.FkFuncionario, opt => opt.Ignore()) 
+    .ForMember(dest => dest.FkUnidade, opt => opt.Ignore()); 
 
             CreateMap<Caixa, CaixaDto>()
                 .ForMember(dest => dest.Funcionario, opt => opt.MapFrom(src => src.Funcionario))
                 .ForMember(dest => dest.Unidade, opt => opt.MapFrom(src => src.Unidade));
             CreateMap<Caixa, CaixaResumidoDto>()
-    .ForMember(dest => dest.FkFuncionario, opt => opt.MapFrom(src => src.FkFuncionario))
-    .ForMember(dest => dest.FkUnidade, opt => opt.MapFrom(src => src.FkUnidade))
-    .ReverseMap();
-            CreateMap<Caixa, CaixaResumidoDto>().ReverseMap();
+                .ReverseMap()
+                .ForMember(dest => dest.Funcionario, opt => opt.Ignore())
+                .ForMember(dest => dest.Unidade, opt => opt.Ignore());
+
 
 
             CreateMap<Jogo, JogoDto>().ReverseMap();
@@ -55,12 +59,28 @@ namespace Claustromania.Mappings
                 .ForMember(dest => dest.Pessoa, opt => opt.MapFrom(src => src.Pessoa))
                 .ReverseMap();
 
-            CreateMap<Reserva, ReservaDto>()
-                .ForMember(dest => dest.Cliente, opt => opt.MapFrom(src => src.Cliente))
-                .ReverseMap();
+            CreateMap<CreateReservaDto, Reserva>();
+            CreateMap<Reserva, ReservaDto>();
+            CreateMap<ReservaDto, Reserva>();
 
             CreateMap<SalaJogo, SalaJogoDto>().ReverseMap();
-            CreateMap<Transacao, TransacaoDto>().ReverseMap();
+
+
+            CreateMap<Transacao, TransacaoDto>()
+            .ForMember(dest => dest.FkCaixa, opt => opt.MapFrom(src => src.FkCaixa))
+            .ReverseMap()
+            .ForMember(dest => dest.FkCaixa, opt => opt.MapFrom(src => src.FkCaixa));
+
+
+
+
+
+            CreateMap<UnidadeCreateDto, Unidade>()
+            .ForMember(dest => dest.FkFuncionario, opt => opt.MapFrom(src => src.FkFuncionario))
+            .ForMember(dest => dest.Endereco, opt => opt.MapFrom(src => src.Endereco))
+            .ForMember(dest => dest.FkEndereco, opt => opt.Ignore())
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+
         }
     }
 }

@@ -8,10 +8,12 @@ namespace Claustromania.Services
     {
 
         private readonly ClaustromaniaDbContext _context;
+        private readonly PessoaService _pessoaService;
 
-        public ClienteService(ClaustromaniaDbContext context)
+        public ClienteService(ClaustromaniaDbContext context, PessoaService pessoaService)
         {
             _context = context;
+            _pessoaService = pessoaService;
         }
 
         public async Task<List<Cliente>> GetAllAsync()
@@ -34,11 +36,7 @@ namespace Claustromania.Services
 
         public async Task<Cliente> CreateAsync(Cliente cliente)
         {
-            // Removendo a lógica de transação e geração de ID aqui, conforme a nova solicitação do usuário.
-            // A geração de ID deve ser tratada no nível do modelo ou DTO, ou pelo banco de dados.
-            // Para este exemplo, vamos assumir que os IDs são gerados antes de chegar ao serviço ou pelo EF Core.
-
-            // Verificar se já existe um cliente com o mesmo e-mail
+            
             if (cliente.Pessoa != null && !string.IsNullOrEmpty(cliente.Pessoa.Email))
             {
                 var existingCliente = await _context.Clientes.Include(c => c.Pessoa).FirstOrDefaultAsync(c => c.Pessoa != null && c.Pessoa.Email == cliente.Pessoa.Email);
@@ -63,14 +61,81 @@ namespace Claustromania.Services
             return cliente;
         }
 
-        public async Task<bool> UpdateAsync(Cliente cliente)
+        public async Task<bool> UpdateAsync(Cliente clienteAtualizado)
         {
-            var existing = await _context.Clientes.FindAsync(cliente.Id);
-            if (existing == null) return false;
+            var clienteExistente = await _context.Clientes
+                .Include(c => c.Pessoa)
+                    .ThenInclude(p => p.Endereco)
+                .FirstOrDefaultAsync(c => c.Id == clienteAtualizado.Id);
 
-            _context.Entry(existing).CurrentValues.SetValues(cliente);
-            await _context.SaveChangesAsync();
-            return true;
+            if (clienteExistente == null)
+                return false;
+
+            
+            clienteExistente.NivelExperiencia = clienteAtualizado.NivelExperiencia;
+
+            if (clienteAtualizado.Pessoa != null)
+            {
+                if (clienteExistente.Pessoa == null)
+                {
+                    // Se não existia, cria nova Pessoa
+                    clienteExistente.Pessoa = clienteAtualizado.Pessoa;
+                }
+                else
+                {
+                    // Atualiza campos da Pessoa manualmente
+                    clienteExistente.Pessoa.Nome = clienteAtualizado.Pessoa.Nome;
+                    clienteExistente.Pessoa.CPF = clienteAtualizado.Pessoa.CPF;
+                    clienteExistente.Pessoa.DataNascimento = clienteAtualizado.Pessoa.DataNascimento;
+                    clienteExistente.Pessoa.Sexo = clienteAtualizado.Pessoa.Sexo;
+                    clienteExistente.Pessoa.Email = clienteAtualizado.Pessoa.Email;
+                    // ... outras propriedades escalares da Pessoa
+
+                    if (clienteAtualizado.Pessoa.Endereco != null)
+                    {
+                        if (clienteExistente.Pessoa.Endereco == null)
+                        {
+                            // Se não existia, cria novo Endereço
+                            clienteExistente.Pessoa.Endereco = clienteAtualizado.Pessoa.Endereco;
+                        }
+                        else
+                        {
+                            // Atualiza campos do Endereço manualmente
+                            clienteExistente.Pessoa.Endereco.Logradouro = clienteAtualizado.Pessoa.Endereco.Logradouro;
+                            clienteExistente.Pessoa.Endereco.Numero = clienteAtualizado.Pessoa.Endereco.Numero;
+                            clienteExistente.Pessoa.Endereco.Complemento = clienteAtualizado.Pessoa.Endereco.Complemento;
+                            clienteExistente.Pessoa.Endereco.Bairro = clienteAtualizado.Pessoa.Endereco.Bairro;
+                            clienteExistente.Pessoa.Endereco.Cidade = clienteAtualizado.Pessoa.Endereco.Cidade;
+                            clienteExistente.Pessoa.Endereco.Estado = clienteAtualizado.Pessoa.Endereco.Estado;
+                            clienteExistente.Pessoa.Endereco.CEP = clienteAtualizado.Pessoa.Endereco.CEP;
+                            // ... outras propriedades escalares do Endereco
+                        }
+                    }
+                    else if (clienteExistente.Pessoa.Endereco != null)
+                    {
+                        // Se o Endereco foi removido no DTO, remova-o da entidade existente
+                        _context.Entry(clienteExistente.Pessoa.Endereco).State = EntityState.Deleted;
+                        clienteExistente.Pessoa.Endereco = null;
+                    }
+                }
+            }
+            else if (clienteExistente.Pessoa != null)
+            {
+                // Se a Pessoa foi removida no DTO, remova-a da entidade existente
+                _context.Entry(clienteExistente.Pessoa).State = EntityState.Deleted;
+                clienteExistente.Pessoa = null;
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine("ERRO AO SALVAR: " + ex.InnerException?.Message);
+                return false;
+            }
         }
 
 
@@ -84,16 +149,25 @@ namespace Claustromania.Services
         public async Task<Cliente?> GetByIdDetalhadoAsync(Guid id)
         {
             return await _context.Clientes
-                                 .Include(c => c.Pessoa) // <-- Inclui a Pessoa
+                                 .Include(c => c.Pessoa) 
                                  .FirstOrDefaultAsync(c => c.Id == id);
         }
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente == null) return false;
+            var cliente = await _context.Clientes
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cliente == null)
+                return false;
+
+            Guid pessoaId = cliente.FkPessoa;
 
             _context.Clientes.Remove(cliente);
             await _context.SaveChangesAsync();
+
+            await _pessoaService.Delete(pessoaId); 
+
             return true;
         }
     }

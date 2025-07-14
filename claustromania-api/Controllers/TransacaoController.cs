@@ -36,18 +36,19 @@ namespace Claustromania.Controllers
         [HttpPost]
         public async Task<ActionResult<TransacaoDto>> Create([FromBody] TransacaoDto dto)
         {
-            var entity = _mapper.Map<Transacao>(dto);
-            var created = await _service.CreateAsync(entity);
+            var created = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<TransacaoDto>(created));
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] TransacaoDto dto)
         {
             if (id != dto.Id) return BadRequest();
-            var updated = await _service.UpdateAsync(_mapper.Map<Transacao>(dto));
+            var updated = await _service.UpdateAsync(id, dto);
             return updated ? NoContent() : NotFound();
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)

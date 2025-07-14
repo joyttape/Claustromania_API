@@ -4,6 +4,7 @@ using Claustromania.Services;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Claustromania.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Claustromania.Controllers
 {
@@ -61,12 +62,29 @@ namespace Claustromania.Controllers
         }
 
         [HttpPut("{id}")]
+
         public async Task<IActionResult> Update(Guid id, [FromBody] ClienteDto dto)
         {
-            if (id != dto.Id) return BadRequest();
-            var updated = await _service.UpdateAsync(_mapper.Map<Cliente>(dto));
-            return updated ? NoContent() : NotFound();
+            try
+            {
+                if (id != dto.Id)
+                    return BadRequest("ID na URL não corresponde ao ID no corpo da requisição");
+
+                var cliente = _mapper.Map<Cliente>(dto);
+                var resultado = await _service.UpdateAsync(cliente);
+
+                if (!resultado)
+                    return NotFound("Cliente não encontrado");
+
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.InnerException?.Message);
+            }
+
         }
+       
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)

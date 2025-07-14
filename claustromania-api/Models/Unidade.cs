@@ -28,6 +28,13 @@ namespace Claustromania.Models
         [Column("telefone")]
         public string Telefone { get; set; }
 
+        [Column("cnpj")]
+        public string Cnpj { get; set; }
+
+        [Column("diafunci")]
+        public string DiaFunci { get; set; }
+
+
         [Column("ativa")]
         public bool Ativa { get; set; } = true;
 

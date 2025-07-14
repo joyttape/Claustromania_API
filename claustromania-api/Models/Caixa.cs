@@ -43,15 +43,13 @@ namespace Claustromania.Models
         [Column("observacoes")]
         public string? Observacoes { get; set; }
 
-        // Propriedade de navegação para Unidade
         [ForeignKey("FkUnidade")]
-        public Unidade Unidade { get; set; } // Adicione esta linha
+        public Unidade Unidade { get; set; } 
 
         [Required]
         [Column("fk_unidade")]
         public Guid FkUnidade { get; set; }
 
-        // Propriedade de navegação para Funcionario
         [ForeignKey("FkFuncionario")]
         public Funcionario Funcionario { get; set; }
 

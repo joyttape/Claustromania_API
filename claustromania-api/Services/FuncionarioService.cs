@@ -1,5 +1,6 @@
 ﻿using Claustromania.Data;
 using Claustromania.Models;
+using Claustromania.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Claustromania.Services
@@ -7,10 +8,15 @@ namespace Claustromania.Services
     public class FuncionarioService
     {
         private readonly ClaustromaniaDbContext _context;
+        private readonly PessoaService _pessoaService;
 
-        public FuncionarioService(ClaustromaniaDbContext context)
+
+
+        public FuncionarioService(ClaustromaniaDbContext context, PessoaService pessoaService)
         {
             _context = context;
+            _pessoaService = pessoaService;
+
         }
 
         public async Task<List<Funcionario>> GetAllAsync()
@@ -36,15 +42,105 @@ namespace Claustromania.Services
             return funcionario;
         }
 
-        public async Task<bool> UpdateAsync(Funcionario funcionario)
+        public async Task<bool> UpdateAsync(Funcionario funcionarioAtualizado)
         {
-            var existing = await _context.Funcionarios.FindAsync(funcionario.Id);
-            if (existing == null) return false;
+            var funcionarioExistente = await _context.Funcionarios
+                .Include(f => f.Pessoa)
+                    .ThenInclude(p => p.Endereco)
+                .FirstOrDefaultAsync(f => f.Id == funcionarioAtualizado.Id);
 
-            _context.Entry(existing).CurrentValues.SetValues(funcionario);
-            await _context.SaveChangesAsync();
-            return true;
+            if (funcionarioExistente == null)
+                return false;
+
+            // 1. Atualiza as propriedades escalares do Funcionario
+            _context.Entry(funcionarioExistente).CurrentValues.SetValues(new
+            {
+                funcionarioAtualizado.Turno,
+                funcionarioAtualizado.Salario,
+                funcionarioAtualizado.Cargo,
+                funcionarioAtualizado.DataContratacao,
+                funcionarioAtualizado.Status,
+                funcionarioAtualizado.Senha
+            });
+
+            // 2. Gerencia a Pessoa associada
+            if (funcionarioAtualizado.Pessoa != null)
+            {
+                if (funcionarioExistente.Pessoa == null)
+                {
+                    // Se não existia Pessoa, adiciona a nova Pessoa ao contexto
+                    // e a associa ao funcionário existente.
+                    funcionarioAtualizado.Pessoa.Id = Guid.NewGuid(); // Garante um novo ID para a nova Pessoa
+                    _context.Pessoas.Add(funcionarioAtualizado.Pessoa);
+                    funcionarioExistente.Pessoa = funcionarioAtualizado.Pessoa;
+                }
+                else
+                {
+                    // Se a Pessoa já existia, atualiza suas propriedades
+                    _context.Entry(funcionarioExistente.Pessoa).CurrentValues.SetValues(new
+                    {
+                        funcionarioAtualizado.Pessoa.Nome,
+                        funcionarioAtualizado.Pessoa.CPF,
+                        funcionarioAtualizado.Pessoa.DataNascimento,
+                        funcionarioAtualizado.Pessoa.Sexo,
+                        funcionarioAtualizado.Pessoa.Email
+                    });
+
+                    // Gerencia o Endereço da Pessoa
+                    if (funcionarioAtualizado.Pessoa.Endereco != null)
+                    {
+                        if (funcionarioExistente.Pessoa.Endereco == null)
+                        {
+                            // Se não existia Endereço, adiciona o novo Endereço ao contexto
+                            // e o associa à Pessoa existente.
+                            funcionarioAtualizado.Pessoa.Endereco.Id = Guid.NewGuid(); // Garante um novo ID
+                            _context.Entry(funcionarioExistente.Pessoa).CurrentValues.SetValues(new { Endereco = funcionarioAtualizado.Pessoa.Endereco });
+                        }
+                        else
+                        {
+                            // Se o Endereço já existia, atualiza suas propriedades
+                            _context.Entry(funcionarioExistente.Pessoa.Endereco).CurrentValues.SetValues(new
+                            {
+                                funcionarioAtualizado.Pessoa.Endereco.Logradouro,
+                                funcionarioAtualizado.Pessoa.Endereco.Numero,
+                                funcionarioAtualizado.Pessoa.Endereco.Complemento,
+                                funcionarioAtualizado.Pessoa.Endereco.Bairro,
+                                funcionarioAtualizado.Pessoa.Endereco.Cidade,
+                                funcionarioAtualizado.Pessoa.Endereco.Estado,
+                                funcionarioAtualizado.Pessoa.Endereco.CEP
+                            });
+                        }
+                    }
+                    else if (funcionarioExistente.Pessoa.Endereco != null)
+                    {
+                        // Se o Endereco foi removido, remova-o da entidade existente
+                        _context.Entry(funcionarioExistente.Pessoa.Endereco).State = EntityState.Deleted;
+                        funcionarioExistente.Pessoa.Endereco = null;
+                    }
+                }
+            }
+            else if (funcionarioExistente.Pessoa != null)
+            {
+                // Se a Pessoa foi removida, remova-a da entidade existente
+                _context.Entry(funcionarioExistente.Pessoa).State = EntityState.Deleted;
+                funcionarioExistente.Pessoa = null;
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine("ERRO AO SALVAR FUNCIONARIO: " + ex.InnerException?.Message);
+                return false;
+            }
         }
+
+
+
+
 
         public async Task<IEnumerable<Funcionario>> GetByNomeAsync(string nome)
         {
@@ -65,14 +161,22 @@ namespace Claustromania.Services
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var funcionario = await _context.Funcionarios.FindAsync(id);
-            if (funcionario == null) return false;
+            var funcionario = await _context.Funcionarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (funcionario == null)
+                return false;
+
+            Guid pessoaId = funcionario.FkPessoa;
 
             _context.Funcionarios.Remove(funcionario);
             await _context.SaveChangesAsync();
+
+            await _pessoaService.Delete(pessoaId); 
+
             return true;
         }
+
     }
 }
-
-

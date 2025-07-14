@@ -3,6 +3,7 @@ using Claustromania.Models;
 using Claustromania.Services;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Claustromania.Dtos;
 
 namespace Claustromania.Controllers
 {
@@ -34,19 +35,35 @@ namespace Claustromania.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ReservaDto>> Create([FromBody] ReservaDto dto)
+        public async Task<ActionResult<ReservaDto>> Create([FromBody] CreateReservaDto dto)
         {
-            var entity = _mapper.Map<Reserva>(dto);
-            var created = await _service.CreateAsync(entity);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<ReservaDto>(created));
+            try
+            {
+                var reserva = _mapper.Map<Reserva>(dto);
+                var created = await _service.CreateAsync(reserva);
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<ReservaDto>(created));
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] ReservaDto dto)
         {
-            if (id != dto.Id) return BadRequest();
-            var updated = await _service.UpdateAsync(_mapper.Map<Reserva>(dto));
-            return updated ? NoContent() : NotFound();
+            if (id != dto.Id) return BadRequest("ID inconsistente");
+
+            try
+            {
+                var reserva = _mapper.Map<Reserva>(dto);
+                var updated = await _service.UpdateAsync(reserva);
+                return updated ? NoContent() : NotFound();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]

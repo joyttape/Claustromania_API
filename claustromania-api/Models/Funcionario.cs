@@ -25,7 +25,7 @@ namespace Claustromania.Models
         public string? Turno { get; set; }
 
         [Column("status")]
-        public string? Status { get; set; }
+        public bool? Status { get; set; }
 
         [ForeignKey("FkPessoa")]
         public Pessoa Pessoa { get; set; }
@@ -34,7 +34,8 @@ namespace Claustromania.Models
         [Column("fk_pessoa")]
         public Guid FkPessoa { get; set; }
 
-        
-        
+        [Column("senha_hash")]
+        public string? Senha { get; set; }
+
     }
 }

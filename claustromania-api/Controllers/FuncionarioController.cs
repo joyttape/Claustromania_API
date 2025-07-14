@@ -44,10 +44,24 @@ namespace Claustromania.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] FuncionarioDto dto)
         {
-            if (id != dto.Id) return BadRequest();
-            var entity = _mapper.Map<Funcionario>(dto);
-            var updated = await _service.UpdateAsync(entity);
-            return updated ? NoContent() : NotFound();
+            try
+            {
+                if (id != dto.Id)
+                    return BadRequest("ID na URL não corresponde ao ID no corpo da requisição");
+
+                var funcionario = _mapper.Map<Funcionario>(dto);
+                var resultado = await _service.UpdateAsync(funcionario);
+
+                if (!resultado)
+                    return NotFound("Cliente não encontrado");
+
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.InnerException?.Message);
+            }
+
         }
 
         [HttpGet("buscar-por-nome")]

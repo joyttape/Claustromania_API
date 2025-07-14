@@ -12,6 +12,10 @@ namespace Claustromania.DTOs
         public string? HorarioAbertura { get; set; }
         public string? HorarioFechamento { get; set; }
         public string Telefone { get; set; }
+
+        public string Cnpj { get; set; }
+
+        public string DiaFunci { get; set; }
         public bool Ativa { get; set; }
 
         public EnderecoDto? Endereco { get; set; }

@@ -31,6 +31,7 @@ builder.Services.AddScoped<TransacaoService>();
 builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<ReservaService>();
 builder.Services.AddScoped<SalaJogoService>();
+builder.Services.AddScoped<PessoaService>();
 
 // (Opcional) Permitir requisições CORS
 builder.Services.AddCors(options =>

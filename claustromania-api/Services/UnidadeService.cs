@@ -1,4 +1,6 @@
-﻿using Claustromania.Data;
+﻿using AutoMapper;
+using Claustromania.Data;
+using Claustromania.Dtos;
 using Claustromania.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,10 +9,12 @@ namespace Claustromania.Services
     public class UnidadeService
     {
         private readonly ClaustromaniaDbContext _context;
+        private readonly IMapper _mapper;
 
-        public UnidadeService(ClaustromaniaDbContext context)
+        public UnidadeService(ClaustromaniaDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<List<Unidade>> GetAllAsync()
@@ -39,6 +43,34 @@ namespace Claustromania.Services
             await _context.SaveChangesAsync();
             return unidade;
         }
+
+        public async Task<Unidade> CreateWithEnderecoAsync(UnidadeCreateDto dto)
+        {
+            var endereco = _mapper.Map<Endereco>(dto.Endereco);
+            _context.Enderecos.Add(endereco);
+            await _context.SaveChangesAsync();
+
+            var unidade = new Unidade
+            {
+                Id = Guid.NewGuid(),
+                Nome = dto.Nome,
+                Capacidade = dto.Capacidade,
+                HorarioAbertura = dto.HorarioAbertura,
+                HorarioFechamento = dto.HorarioFechamento,
+                Cnpj = dto.Cnpj,
+                DiaFunci = dto.DiaFunci,
+                Telefone = dto.Telefone,
+                Ativa = dto.Ativa,
+                FkFuncionario = dto.FkFuncionario,
+                FkEndereco = endereco.Id
+            };
+
+            _context.Unidades.Add(unidade);
+            await _context.SaveChangesAsync();
+
+            return unidade;
+        }
+
 
         public async Task<bool> UpdateAsync(Unidade unidade)
         {
