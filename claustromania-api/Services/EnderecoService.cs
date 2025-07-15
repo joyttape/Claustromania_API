@@ -58,7 +58,7 @@ namespace Claustromania.Services
         public async Task<Endereco?> GetByIdDetalhadoAsync(Guid id)
         {
             return await _context.Enderecos
-                                 .Include(e => e.Pessoas) // <-- Inclui a coleção de Pessoas
+                                 .Include(e => e.Pessoas) 
                                  .FirstOrDefaultAsync(e => e.Id == id);
 
 

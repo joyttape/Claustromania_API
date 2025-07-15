@@ -47,6 +47,8 @@ UNLOCK TABLES;
 -- Table structure for table `caixa`
 --
 
+SELECT * FROM Caixa WHERE id = "c44a2696-9438-4856-bbd1-f1295e2e0d7c";
+
 DROP TABLE IF EXISTS `caixa`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -59,7 +61,7 @@ CREATE TABLE `caixa` (
   `data_hora_fechamento` datetime DEFAULT NULL,
   `valor_inicial` decimal(10,2) NOT NULL,
   `valor_final` decimal(10,2) DEFAULT NULL,
-  `total_transacoes` int DEFAULT '0',
+  `total_transacoes` decimal(10,2) DEFAULT '0',
   `status` varchar(50) NOT NULL,
   `observacoes` text,
   PRIMARY KEY (`id`),

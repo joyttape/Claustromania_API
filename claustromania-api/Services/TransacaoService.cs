@@ -32,23 +32,18 @@ namespace Claustromania.Services
 
         public async Task<Transacao> CreateAsync(TransacaoDto dto)
         {
-            // Validação básica do DTO
             if (dto == null)
-                throw new ArgumentNullException(nameof(dto), "DTO não pode ser nulo");
+                throw new ArgumentNullException(nameof(dto));
 
             if (dto.FkCaixa == Guid.Empty)
                 throw new ArgumentException("ID do caixa não pode ser vazio");
 
-            // Verifica se o caixa existe e está aberto
-            // Verifique apenas a propriedade que existe no seu modelo
             var caixa = await _context.Caixas
-                .FirstOrDefaultAsync(c => c.Id == dto.FkCaixa &&
-                                        (c.Status == "aberto"));
+                .FirstOrDefaultAsync(c => c.Id == dto.FkCaixa && c.Status.ToLower() == "aberto");
 
             if (caixa == null)
                 throw new Exception("Caixa não encontrado ou está fechado");
 
-            // Cria a transação
             var transacao = new Transacao
             {
                 Id = Guid.NewGuid(),
@@ -57,7 +52,7 @@ namespace Claustromania.Services
                 Tipo = !string.IsNullOrEmpty(dto.Tipo) ? dto.Tipo : "RESERVA",
                 FormaPagamento = dto.FormaPagamento,
                 Pagador = dto.Pagador,
-                ValorRecebido = dto.ValorRecebido ?? dto.Valor,
+                ValorRecebido = dto.ValorRecebido ?? (decimal)dto.Valor,
                 Troco = dto.Troco ?? 0,
                 FkCaixa = dto.FkCaixa,
                 FkPessoa = dto.FkPessoa,
@@ -69,7 +64,6 @@ namespace Claustromania.Services
 
             return transacao;
         }
-
 
         public async Task<bool> UpdateAsync(Guid id, TransacaoDto dto)
         {
@@ -91,7 +85,6 @@ namespace Claustromania.Services
                     throw new Exception("Pessoa não encontrada");
             }
 
-            // Atribuições com tratamento correto da data
             existing.Valor = dto.Valor;
             existing.Data = DateTime.TryParse(dto.Data, out var parsedDate) ? parsedDate : DateTime.Now;
             existing.Tipo = dto.Tipo;

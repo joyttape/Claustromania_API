@@ -41,9 +41,7 @@ namespace Claustromania.Services
         {
             caixa.Id = Guid.NewGuid();
 
-            // =========================
-            // 🔍 Verificar/Salvar Pessoa
-            // =========================
+
             var pessoa = caixa.Funcionario.Pessoa;
             var pessoaExistente = await _context.Pessoas
                 .FirstOrDefaultAsync(p => p.CPF == pessoa.CPF);
@@ -51,20 +49,17 @@ namespace Claustromania.Services
             if (pessoaExistente != null)
             {
                 caixa.Funcionario.FkPessoa = pessoaExistente.Id;
-                caixa.Funcionario.Pessoa = null; // Evita conflito
+                caixa.Funcionario.Pessoa = null;
             }
             else
             {
                 pessoa.Id = Guid.NewGuid();
                 pessoa.Endereco.Id = Guid.NewGuid();
                 _context.Pessoas.Add(pessoa);
-                await _context.SaveChangesAsync(); // Salva Pessoa + Endereco
+                await _context.SaveChangesAsync();
                 caixa.Funcionario.FkPessoa = pessoa.Id;
             }
 
-            // =============================
-            // 👨‍💼 Verificar/Salvar Funcionario
-            // =============================
             var funcionario = caixa.Funcionario;
             var funcionarioExistente = await _context.Funcionarios
                 .FirstOrDefaultAsync(f => f.FkPessoa == funcionario.FkPessoa);
@@ -72,7 +67,7 @@ namespace Claustromania.Services
             if (funcionarioExistente != null)
             {
                 caixa.FkFuncionario = funcionarioExistente.Id;
-                caixa.Funcionario = null; // Evita conflito
+                caixa.Funcionario = null; 
             }
             else
             {
@@ -82,9 +77,6 @@ namespace Claustromania.Services
                 caixa.FkFuncionario = funcionario.Id;
             }
 
-            // ======================
-            // 🏢 Verificar Unidade
-            // ======================
             var unidade = caixa.Unidade;
             var unidadeExistente = await _context.Unidades
                 .FirstOrDefaultAsync(u =>
@@ -104,9 +96,7 @@ namespace Claustromania.Services
                 caixa.FkUnidade = unidade.Id;
             }
 
-            // =====================
-            // 💾 Salvar o Caixa
-            // =====================
+         
             _context.Caixas.Add(caixa);
             await _context.SaveChangesAsync();
 
@@ -124,7 +114,6 @@ namespace Claustromania.Services
             if (existing == null)
                 return false;
 
-            // Pessoa
             var pessoa = caixa.Funcionario?.Pessoa;
             if (pessoa != null)
             {
@@ -144,7 +133,6 @@ namespace Claustromania.Services
                 }
             }
 
-            // Funcionario
             var funcionario = caixa.Funcionario;
             if (funcionario != null)
             {
@@ -165,7 +153,6 @@ namespace Claustromania.Services
                 }
             }
 
-            // Unidade
             var unidade = caixa.Unidade;
             if (unidade != null)
             {
@@ -187,7 +174,6 @@ namespace Claustromania.Services
                 }
             }
 
-            // Atualiza os campos do Caixa
             _context.Entry(existing).CurrentValues.SetValues(caixa);
             await _context.SaveChangesAsync();
             return true;
@@ -210,7 +196,6 @@ namespace Claustromania.Services
             if (existingCaixa == null)
                 return false;
 
-            // Atualiza apenas os campos relevantes para a versão resumida
             existingCaixa.Nome = caixa.Nome;
             existingCaixa.DataHoraAbertura = caixa.DataHoraAbertura;
             existingCaixa.DataHoraFechamento = caixa.DataHoraFechamento;
@@ -252,7 +237,7 @@ namespace Claustromania.Services
                                     .ThenInclude(f => f.Pessoa)
                                         .ThenInclude(e => e.Endereco)
                                  .Include(c => c.Unidade)
-                                 .ThenInclude(u => u.Endereco) // <-- Adicionado
+                                 .ThenInclude(u => u.Endereco) 
 
                                  .ToListAsync();
         }

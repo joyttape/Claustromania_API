@@ -10,7 +10,7 @@
         public DateTime? DataHoraFechamento { get; set; }
         public decimal ValorInicial { get; set; }
         public decimal? ValorFinal { get; set; }
-        public int TotalTransacoes { get; set; }
+        public decimal TotalTransacoes { get; set; }
         public string Status { get; set; } = null!;
         public string? Observacoes { get; set; }
     }

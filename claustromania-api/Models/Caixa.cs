@@ -34,7 +34,7 @@ namespace Claustromania.Models
         public decimal? ValorFinal { get; set; }
 
         [Column("total_transacoes")]
-        public int TotalTransacoes { get; set; } = 0;
+        public decimal TotalTransacoes { get; set; } = 0;
 
         [Required]
         [Column("status")]

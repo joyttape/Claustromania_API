@@ -59,11 +59,9 @@ namespace Claustromania.Services
             var existing = await _context.Reservas.FindAsync(reserva.Id);
             if (existing == null) return false;
 
-            if (!await _context.Clientes.AnyAsync(c => c.Id == reserva.FkCliente))
-                throw new ArgumentException("Cliente não encontrado");
-
-            if (!await _context.SalaJogos.AnyAsync(sj => sj.Id == reserva.FkSalaJogo))
-                throw new ArgumentException("Sala de Jogo não encontrada");
+            string statusAntigo = existing.Status?.ToLower() ?? "";
+            string novoStatus = reserva.Status?.ToLower() ?? "";
+            decimal valorAntigo = existing.ValorTotal;
 
             existing.DataReserva = reserva.DataReserva;
             existing.HoraReserva = reserva.HoraReserva;
@@ -75,9 +73,60 @@ namespace Claustromania.Services
             existing.FkCliente = reserva.FkCliente;
             existing.FkSalaJogo = reserva.FkSalaJogo;
 
+            var transacao = await _context.Transacoes
+                .Include(t => t.Caixa)
+                .Where(t => t.FkReserva == reserva.Id)
+                .OrderByDescending(t => t.Data)
+                .FirstOrDefaultAsync();
+
+            if (transacao != null && transacao.Caixa != null)
+            {
+                var caixa = transacao.Caixa;
+
+                Console.WriteLine($"✅ Caixa encontrado: ID {caixa.Id}, Status: {caixa.Status}");
+
+                if (caixa.Status.ToLower() != "aberto")
+                {
+                    Console.WriteLine("⚠️ Caixa está fechado, não é possível alterar o total.");
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+
+                decimal valorTransacao = transacao.ValorRecebido ?? transacao.Valor;
+
+                if ((statusAntigo == "confirmado" || statusAntigo == "concluido") &&
+                    !(novoStatus == "confirmado" || novoStatus == "concluido"))
+                {
+                    caixa.TotalTransacoes -= valorTransacao;
+                    Console.WriteLine($"➖ Subtraindo {valorTransacao} do caixa (status mudou de {statusAntigo} para {novoStatus})");
+                }
+                else if (!(statusAntigo == "confirmado" || statusAntigo == "concluido") &&
+                         (novoStatus == "confirmado" || novoStatus == "concluido"))
+                {
+                    caixa.TotalTransacoes += valorTransacao;
+                    Console.WriteLine($"➕ Somando {valorTransacao} ao caixa (status mudou de {statusAntigo} para {novoStatus})");
+                }
+                else if (valorAntigo != reserva.ValorTotal &&
+                         (novoStatus == "confirmado" || novoStatus == "concluido"))
+                {
+                    decimal diferenca = reserva.ValorTotal - valorAntigo;
+                    caixa.TotalTransacoes += diferenca;
+                    Console.WriteLine($"🔄 Ajustando caixa em {diferenca} (valor mudou de {valorAntigo} para {reserva.ValorTotal})");
+                }
+
+                _context.Caixas.Update(caixa);
+            }
+            else
+            {
+                Console.WriteLine(transacao == null
+                    ? "❌ Nenhuma transação encontrada para esta reserva"
+                    : "❌ Transação encontrada, mas sem caixa vinculado");
+            }
+
             await _context.SaveChangesAsync();
             return true;
         }
+
 
         public async Task<bool> DeleteAsync(Guid id)
         {

@@ -46,13 +46,13 @@ namespace Claustromania.Services
                 }
             }
 
-            cliente.Id = Guid.NewGuid(); // Gerar ID para o Cliente
+            cliente.Id = Guid.NewGuid();
             if (cliente.Pessoa != null)
             {
-                cliente.Pessoa.Id = Guid.NewGuid(); // Gerar ID para a Pessoa
+                cliente.Pessoa.Id = Guid.NewGuid();
                 if (cliente.Pessoa.Endereco != null)
                 {
-                    cliente.Pessoa.Endereco.Id = Guid.NewGuid(); // Gerar ID para o Endereco
+                    cliente.Pessoa.Endereco.Id = Guid.NewGuid(); 
                 }
             }
 
@@ -78,29 +78,24 @@ namespace Claustromania.Services
             {
                 if (clienteExistente.Pessoa == null)
                 {
-                    // Se não existia, cria nova Pessoa
                     clienteExistente.Pessoa = clienteAtualizado.Pessoa;
                 }
                 else
                 {
-                    // Atualiza campos da Pessoa manualmente
                     clienteExistente.Pessoa.Nome = clienteAtualizado.Pessoa.Nome;
                     clienteExistente.Pessoa.CPF = clienteAtualizado.Pessoa.CPF;
                     clienteExistente.Pessoa.DataNascimento = clienteAtualizado.Pessoa.DataNascimento;
                     clienteExistente.Pessoa.Sexo = clienteAtualizado.Pessoa.Sexo;
                     clienteExistente.Pessoa.Email = clienteAtualizado.Pessoa.Email;
-                    // ... outras propriedades escalares da Pessoa
 
                     if (clienteAtualizado.Pessoa.Endereco != null)
                     {
                         if (clienteExistente.Pessoa.Endereco == null)
                         {
-                            // Se não existia, cria novo Endereço
                             clienteExistente.Pessoa.Endereco = clienteAtualizado.Pessoa.Endereco;
                         }
                         else
                         {
-                            // Atualiza campos do Endereço manualmente
                             clienteExistente.Pessoa.Endereco.Logradouro = clienteAtualizado.Pessoa.Endereco.Logradouro;
                             clienteExistente.Pessoa.Endereco.Numero = clienteAtualizado.Pessoa.Endereco.Numero;
                             clienteExistente.Pessoa.Endereco.Complemento = clienteAtualizado.Pessoa.Endereco.Complemento;
@@ -108,12 +103,10 @@ namespace Claustromania.Services
                             clienteExistente.Pessoa.Endereco.Cidade = clienteAtualizado.Pessoa.Endereco.Cidade;
                             clienteExistente.Pessoa.Endereco.Estado = clienteAtualizado.Pessoa.Endereco.Estado;
                             clienteExistente.Pessoa.Endereco.CEP = clienteAtualizado.Pessoa.Endereco.CEP;
-                            // ... outras propriedades escalares do Endereco
                         }
                     }
                     else if (clienteExistente.Pessoa.Endereco != null)
                     {
-                        // Se o Endereco foi removido no DTO, remova-o da entidade existente
                         _context.Entry(clienteExistente.Pessoa.Endereco).State = EntityState.Deleted;
                         clienteExistente.Pessoa.Endereco = null;
                     }
@@ -121,7 +114,6 @@ namespace Claustromania.Services
             }
             else if (clienteExistente.Pessoa != null)
             {
-                // Se a Pessoa foi removida no DTO, remova-a da entidade existente
                 _context.Entry(clienteExistente.Pessoa).State = EntityState.Deleted;
                 clienteExistente.Pessoa = null;
             }
@@ -142,7 +134,7 @@ namespace Claustromania.Services
         public async Task<IEnumerable<Cliente>> GetAllDetalhadoAsync()
         {
             return await _context.Clientes
-                                 .Include(c => c.Pessoa) // <-- Inclui a Pessoa
+                                 .Include(c => c.Pessoa)
                                  .ToListAsync();
         }
 

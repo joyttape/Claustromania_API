@@ -52,7 +52,6 @@ namespace Claustromania.Services
             if (funcionarioExistente == null)
                 return false;
 
-            // 1. Atualiza as propriedades escalares do Funcionario
             _context.Entry(funcionarioExistente).CurrentValues.SetValues(new
             {
                 funcionarioAtualizado.Turno,
@@ -63,20 +62,17 @@ namespace Claustromania.Services
                 funcionarioAtualizado.Senha
             });
 
-            // 2. Gerencia a Pessoa associada
             if (funcionarioAtualizado.Pessoa != null)
             {
                 if (funcionarioExistente.Pessoa == null)
                 {
-                    // Se não existia Pessoa, adiciona a nova Pessoa ao contexto
-                    // e a associa ao funcionário existente.
-                    funcionarioAtualizado.Pessoa.Id = Guid.NewGuid(); // Garante um novo ID para a nova Pessoa
+
+                    funcionarioAtualizado.Pessoa.Id = Guid.NewGuid();
                     _context.Pessoas.Add(funcionarioAtualizado.Pessoa);
                     funcionarioExistente.Pessoa = funcionarioAtualizado.Pessoa;
                 }
                 else
                 {
-                    // Se a Pessoa já existia, atualiza suas propriedades
                     _context.Entry(funcionarioExistente.Pessoa).CurrentValues.SetValues(new
                     {
                         funcionarioAtualizado.Pessoa.Nome,
@@ -86,19 +82,15 @@ namespace Claustromania.Services
                         funcionarioAtualizado.Pessoa.Email
                     });
 
-                    // Gerencia o Endereço da Pessoa
                     if (funcionarioAtualizado.Pessoa.Endereco != null)
                     {
                         if (funcionarioExistente.Pessoa.Endereco == null)
                         {
-                            // Se não existia Endereço, adiciona o novo Endereço ao contexto
-                            // e o associa à Pessoa existente.
-                            funcionarioAtualizado.Pessoa.Endereco.Id = Guid.NewGuid(); // Garante um novo ID
+                            funcionarioAtualizado.Pessoa.Endereco.Id = Guid.NewGuid(); 
                             _context.Entry(funcionarioExistente.Pessoa).CurrentValues.SetValues(new { Endereco = funcionarioAtualizado.Pessoa.Endereco });
                         }
                         else
                         {
-                            // Se o Endereço já existia, atualiza suas propriedades
                             _context.Entry(funcionarioExistente.Pessoa.Endereco).CurrentValues.SetValues(new
                             {
                                 funcionarioAtualizado.Pessoa.Endereco.Logradouro,
@@ -113,7 +105,6 @@ namespace Claustromania.Services
                     }
                     else if (funcionarioExistente.Pessoa.Endereco != null)
                     {
-                        // Se o Endereco foi removido, remova-o da entidade existente
                         _context.Entry(funcionarioExistente.Pessoa.Endereco).State = EntityState.Deleted;
                         funcionarioExistente.Pessoa.Endereco = null;
                     }
@@ -121,7 +112,6 @@ namespace Claustromania.Services
             }
             else if (funcionarioExistente.Pessoa != null)
             {
-                // Se a Pessoa foi removida, remova-a da entidade existente
                 _context.Entry(funcionarioExistente.Pessoa).State = EntityState.Deleted;
                 funcionarioExistente.Pessoa = null;
             }
